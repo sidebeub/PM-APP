@@ -1,0 +1,25 @@
+{
+  "issueTracking": {
+    "autoUpdateIssuesFile": true,
+    "issuesFilePath": "ISSUES_AND_SOLUTIONS.md",
+    "issueTemplate": "| {issue} | {solution} | {date} | {status} |",
+    "pendingIssueTemplate": "| {issue} | {priority} | {notes} |"
+  },
+  "dependencyTracking": {
+    "enabled": true,
+    "dependencyFilePath": "DEPENDENCIES.md",
+    "autoDetectDependencies": true,
+    "trackImportStatements": true,
+    "trackComponentUsage": true
+  },
+  "codeReview": {
+    "enabled": true,
+    "reviewTemplate": "REVIEW_TEMPLATE.md",
+    "autoGenerateReviewNotes": true
+  },
+  "documentation": {
+    "autoUpdateDocs": true,
+    "docsPath": "docs/",
+    "componentDocsTemplate": "COMPONENT_TEMPLATE.md"
+  }
+} 
