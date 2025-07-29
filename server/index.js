@@ -185,31 +185,20 @@ app.use((err, req, res, next) => {
 });
 
 // Start the HTTP server (which will handle both HTTP and WebSocket)
-const startServer = async (portToTry) => {
-  try {
-    // Try to kill any process using this port
-    const killed = await killPortProcess(portToTry);
-    if (killed) {
-      console.log(`Killed process using port ${portToTry}`);
-    }
-    
-    server.listen(portToTry, () => {
-      console.log(`Server running on port ${portToTry}`);
-      port = portToTry; // Update the port variable with the actual port being used
-    }).on('error', (err) => {
-      if (err.code === 'EADDRINUSE') {
-        console.log(`Port ${portToTry} is already in use, trying port ${portToTry + 1}`);
-        startServer(portToTry + 1);
-      } else {
-        console.error('Server error:', err);
-      }
-    });
-  } catch (error) {
-    console.error('Error starting server:', error);
-  }
+const startServer = () => {
+  const serverPort = process.env.PORT || 3001;
+
+  server.listen(serverPort, '0.0.0.0', () => {
+    console.log(`Server running on port ${serverPort}`);
+    console.log(`Environment: ${process.env.NODE_ENV}`);
+    console.log(`Database host: ${process.env.DB_HOST || 'localhost'}`);
+  }).on('error', (err) => {
+    console.error('Server error:', err);
+    process.exit(1);
+  });
 };
 
-startServer(port);
+startServer();
 
 // Handle server shutdown
 process.on('SIGINT', () => {
