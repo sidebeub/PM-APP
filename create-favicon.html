@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Favicon</title>
+</head>
+<body>
+    <canvas id="canvas" width="32" height="32" style="border: 1px solid #ccc; image-rendering: pixelated; width: 320px; height: 320px;"></canvas>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Clear canvas with white background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 32, 32);
+        
+        // Draw a simple project management icon
+        // Background circle
+        ctx.fillStyle = '#1976d2'; // Material Design blue
+        ctx.beginPath();
+        ctx.arc(16, 16, 14, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // Draw checklist lines (representing tasks)
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        
+        // First task line
+        ctx.beginPath();
+        ctx.moveTo(8, 10);
+        ctx.lineTo(24, 10);
+        ctx.stroke();
+        
+        // Second task line
+        ctx.beginPath();
+        ctx.moveTo(8, 16);
+        ctx.lineTo(24, 16);
+        ctx.stroke();
+        
+        // Third task line
+        ctx.beginPath();
+        ctx.moveTo(8, 22);
+        ctx.lineTo(20, 22);
+        ctx.stroke();
+        
+        // Add checkmarks
+        ctx.strokeStyle = '#4caf50'; // Green checkmarks
+        ctx.lineWidth = 1.5;
+        
+        // First checkmark
+        ctx.beginPath();
+        ctx.moveTo(6, 10);
+        ctx.lineTo(7, 11);
+        ctx.lineTo(9, 9);
+        ctx.stroke();
+        
+        // Second checkmark
+        ctx.beginPath();
+        ctx.moveTo(6, 16);
+        ctx.lineTo(7, 17);
+        ctx.lineTo(9, 15);
+        ctx.stroke();
+        
+        console.log('Favicon created! Right-click the canvas and save as favicon.ico');
+        
+        // Convert to downloadable link
+        setTimeout(() => {
+            const link = document.createElement('a');
+            link.download = 'favicon.png';
+            link.href = canvas.toDataURL();
+            link.textContent = 'Download Favicon';
+            link.style.display = 'block';
+            link.style.marginTop = '20px';
+            link.style.fontSize = '18px';
+            document.body.appendChild(link);
+        }, 100);
+    </script>
+    
+    <p>This creates a simple project management favicon with a checklist design.</p>
+    <p>Click the download link to save it, then replace the favicon.ico file in your public folder.</p>
+</body>
+</html>

@@ -42,6 +42,7 @@
     "db:migrate:data": "node server/db/one-time-scripts/migrate-data.js",
     "db:add-user": "node server/db/one-time-scripts/add-user.js",
     "db:add-task": "node server/db/one-time-scripts/add-task.js",
+    "db:fix-sequences": "node server/db/fix-sequences.js",
     "kill-port": "node server/utils/killPort.js",
     "dev": "concurrently \"npm run dev:client\" \"npm run server:dev\"",
     "prod": "npm run build && cross-env NODE_ENV=production node server/index.js",

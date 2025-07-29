@@ -43,6 +43,48 @@ import KbomDataManager from './components/KbomDataManager';
 // Styles
 import './App.css';
 
+// Component to update page title
+const PageTitleUpdater: React.FC = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    const getPageTitle = (pathname: string) => {
+      const baseName = 'Project Management Pro';
+      switch (pathname) {
+        case '/':
+        case '/dashboard':
+          return `${baseName} - Dashboard`;
+        case '/projects':
+          return `${baseName} - Projects`;
+        case '/tasks':
+          return `${baseName} - Tasks`;
+        case '/users':
+          return `${baseName} - Team`;
+        case '/customers':
+          return `${baseName} - Customers`;
+        case '/gantt':
+          return `${baseName} - Gantt Chart`;
+        case '/kanban':
+          return `${baseName} - Kanban Board`;
+        case '/simple-kanban':
+          return `${baseName} - Simple Kanban`;
+        case '/dependencies':
+          return `${baseName} - Dependencies`;
+        case '/kbom':
+          return `${baseName} - KBOM Import`;
+        default:
+          if (pathname.includes('/projects/')) return `${baseName} - Project Details`;
+          if (pathname.includes('/tasks/')) return `${baseName} - Task Details`;
+          return baseName;
+      }
+    };
+
+    document.title = getPageTitle(location.pathname);
+  }, [location.pathname]);
+
+  return null;
+};
+
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const { isAuthenticated, status, user } = useSelector((state: RootState) => state.auth);
@@ -102,6 +144,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
+      <PageTitleUpdater />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
