@@ -32,7 +32,7 @@
     "start": "node server/index.js",
     "build:prod": "cross-env NODE_OPTIONS=--max-old-space-size=4096 GENERATE_SOURCEMAP=false react-scripts build",
     "dev:client": "react-scripts start",
-    "build": "cross-env GENERATE_SOURCEMAP=false react-scripts build",
+    "build": "cross-env NODE_ENV=production GENERATE_SOURCEMAP=false react-scripts build",
     "server": "node server/index.js",
     "server:dev": "nodemon server/index.js",
     "db:setup": "node server/db/setup.js",
