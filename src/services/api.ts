@@ -5,16 +5,10 @@ const pendingRequests = new Map<string, Promise<any>>();
 
 // Configure axios instance with timeout and retry logic
 const getBaseURL = () => {
-  // For Railway deployment, always use relative URL unless on localhost
-  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
-  if (isLocalhost) {
-    console.log('Development mode: using localhost API');
-    return 'http://localhost:3001/api';
-  } else {
-    console.log('Production mode: using relative API URL');
-    return '/api';
-  }
+  // HARDCODED FOR RAILWAY DEPLOYMENT
+  // Always use relative URL in production build
+  console.log('Using hardcoded relative API URL for Railway');
+  return '/api';
 };
 
 export const api = axios.create({
