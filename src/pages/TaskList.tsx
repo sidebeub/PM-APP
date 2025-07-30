@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, RootState } from '../store';
-import { fetchTasks, deleteTask, createTask } from '../store/tasksSlice';
+import { fetchTasks, deleteTask, createTask, bulkUpdateTaskDates } from '../store/tasksSlice';
 import GlitchTitle from '../components/animations/GlitchTitle';
 import ScrambleHover from '../components/animations/ScrambleHover';
 import {
@@ -36,6 +36,9 @@ import {
   DialogContentText,
   DialogTitle,
   Alert,
+  Checkbox,
+  Toolbar,
+  alpha,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -43,7 +46,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import SearchIcon from '@mui/icons-material/Search';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DateRangeIcon from '@mui/icons-material/DateRange';
+import SelectAllIcon from '@mui/icons-material/SelectAll';
 import { Task, TaskStatus, TaskPriority, TaskStatusType, TaskPriorityType } from '../types';
+import BulkDateUpdateDialog from '../components/BulkDateUpdateDialog';
 
 const TaskList: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -66,6 +72,10 @@ const TaskList: React.FC = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  // Bulk update state
+  const [selectedTasks, setSelectedTasks] = useState<number[]>([]);
+  const [bulkUpdateDialogOpen, setBulkUpdateDialogOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchTasks());
@@ -216,6 +226,32 @@ const TaskList: React.FC = () => {
     }
   };
 
+  // Bulk operation handlers
+  const handleSelectTask = (taskId: number) => {
+    setSelectedTasks(prev =>
+      prev.includes(taskId)
+        ? prev.filter(id => id !== taskId)
+        : [...prev, taskId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedTasks.length === filteredTasks.length) {
+      setSelectedTasks([]);
+    } else {
+      setSelectedTasks(filteredTasks.map(task => task.id));
+    }
+  };
+
+  const handleBulkDateUpdate = async (taskIds: number[], updates: { start_date?: string; due_date?: string }) => {
+    await dispatch(bulkUpdateTaskDates({ taskIds, updates })).unwrap();
+    setSelectedTasks([]);
+  };
+
+  const getSelectedTasksData = () => {
+    return filteredTasks.filter(task => selectedTasks.includes(task.id));
+  };
+
   return (
     <div>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -296,10 +332,45 @@ const TaskList: React.FC = () => {
         </Box>
       ) : (
         <Paper>
+          {/* Bulk Operations Toolbar */}
+          {selectedTasks.length > 0 && (
+            <Toolbar
+              sx={{
+                pl: { sm: 2 },
+                pr: { xs: 1, sm: 1 },
+                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.12),
+              }}
+            >
+              <Typography
+                sx={{ flex: '1 1 100%' }}
+                color="inherit"
+                variant="subtitle1"
+                component="div"
+              >
+                {selectedTasks.length} task{selectedTasks.length !== 1 ? 's' : ''} selected
+              </Typography>
+              <Tooltip title="Bulk Update Dates">
+                <IconButton
+                  onClick={() => setBulkUpdateDialogOpen(true)}
+                  disabled={selectedTasks.length === 0}
+                >
+                  <DateRangeIcon />
+                </IconButton>
+              </Tooltip>
+            </Toolbar>
+          )}
           <TableContainer>
             <Table>
               <TableHead>
                 <TableRow>
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      indeterminate={selectedTasks.length > 0 && selectedTasks.length < filteredTasks.length}
+                      checked={filteredTasks.length > 0 && selectedTasks.length === filteredTasks.length}
+                      onChange={handleSelectAll}
+                      inputProps={{ 'aria-label': 'select all tasks' }}
+                    />
+                  </TableCell>
                   <TableCell>Title</TableCell>
                   <TableCell>Project</TableCell>
                   <TableCell>Customer</TableCell>
@@ -315,8 +386,15 @@ const TaskList: React.FC = () => {
                 {filteredTasks
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((task) => (
-                    <TableRow key={task.id}>
-                      <TableCell component="th" scope="row">
+                    <TableRow key={task.id} selected={selectedTasks.includes(task.id)}>
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={selectedTasks.includes(task.id)}
+                          onChange={() => handleSelectTask(task.id)}
+                          inputProps={{ 'aria-labelledby': `task-${task.id}` }}
+                        />
+                      </TableCell>
+                      <TableCell component="th" scope="row" id={`task-${task.id}`}>
                         <ScrambleHover
                           text={task.title}
                           scrambleSpeed={40}
@@ -458,6 +536,14 @@ const TaskList: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Bulk Date Update Dialog */}
+      <BulkDateUpdateDialog
+        open={bulkUpdateDialogOpen}
+        onClose={() => setBulkUpdateDialogOpen(false)}
+        selectedTasks={getSelectedTasksData()}
+        onUpdate={handleBulkDateUpdate}
+      />
     </div>
   );
 };

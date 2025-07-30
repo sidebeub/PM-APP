@@ -155,6 +155,25 @@ export const removeTaskDependency = createAsyncThunk(
   }
 );
 
+export const bulkUpdateTaskDates = createAsyncThunk(
+  'tasks/bulkUpdateTaskDates',
+  async ({ taskIds, updates }: { taskIds: number[]; updates: { start_date?: string; due_date?: string } }, { rejectWithValue }) => {
+    try {
+      const updatedTasks = [];
+
+      // Update each task individually
+      for (const taskId of taskIds) {
+        const updatedTask = await taskService.updateTask(taskId, updates);
+        updatedTasks.push({ id: taskId, task: updatedTask.data });
+      }
+
+      return updatedTasks;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.error || 'Failed to bulk update task dates');
+    }
+  }
+);
+
 // Create the slice
 const tasksSlice = createSlice({
   name: 'tasks',
@@ -403,6 +422,26 @@ const tasksSlice = createSlice({
       }
     });
     builder.addCase(removeTaskDependency.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+
+    // Bulk update task dates
+    builder.addCase(bulkUpdateTaskDates.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(bulkUpdateTaskDates.fulfilled, (state, action) => {
+      state.loading = false;
+      // Update each task in the state
+      action.payload.forEach(({ id, task }) => {
+        const index = state.tasks.findIndex(t => t && t.id === id);
+        if (index !== -1) {
+          state.tasks[index] = { ...state.tasks[index], ...task };
+        }
+      });
+    });
+    builder.addCase(bulkUpdateTaskDates.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });
