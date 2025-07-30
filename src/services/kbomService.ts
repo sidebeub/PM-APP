@@ -91,5 +91,19 @@ export const kbomService = {
       console.error('Error importing all from kbom:', error);
       throw error;
     }
+  },
+
+  // Import only customer and SO (project) from kbom
+  importCustomerAndSoFromKbom: async (data: {
+    customerName: string;
+    projectName: string;
+  }) => {
+    try {
+      const response = await api.post('/kbom/import-customer-so', data);
+      return response.data;
+    } catch (error) {
+      console.error('Error importing customer and SO from kbom:', error);
+      throw error;
+    }
   }
-}; 
+};

@@ -218,7 +218,50 @@ const kbomController = {
       console.error('Error importing all from kbom:', error);
       res.status(500).json({ error: 'Failed to import all from kbom' });
     }
+  },
+
+  // Import only customer and SO (project) from kbom
+  importCustomerAndSoFromKbom: async (req, res) => {
+    try {
+      const { customerName, projectName } = req.body;
+
+      // Create customer if it doesn't exist
+      let customer = await customerModel.getCustomerByName(customerName);
+      if (!customer) {
+        customer = await customerModel.createCustomer({
+          name: customerName,
+          email: `${customerName.toLowerCase().replace(/\s+/g, '.')}@example.com`,
+          phone: 'N/A',
+          address: 'N/A'
+        });
+      }
+
+      // Create project if it doesn't exist
+      let project = await projectModel.getProjectByNumber(projectName);
+      if (!project) {
+        project = await projectModel.createProject({
+          project_number: projectName,
+          title: projectName,
+          description: `Project imported from kbom for ${customerName}`,
+          customer_id: customer.id,
+          status: 'Active',
+          start_date: new Date(),
+          end_date: null,
+          budget: 0,
+          manager_id: req.user.id
+        });
+      }
+
+      res.status(200).json({
+        message: 'Customer and project imported successfully',
+        customer: customer,
+        project: project
+      });
+    } catch (error) {
+      console.error('Error importing customer and SO from kbom:', error);
+      res.status(500).json({ error: 'Failed to import customer and SO from kbom' });
+    }
   }
 };
 
-module.exports = kbomController; 
+module.exports = kbomController;

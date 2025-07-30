@@ -30,4 +30,7 @@ router.post('/import', kbomController.importFromKbom);
 // Import all data from kbom
 router.post('/import-all', kbomController.importAllFromKbom);
 
-module.exports = router; 
+// Import only customer and SO from kbom
+router.post('/import-customer-so', kbomController.importCustomerAndSoFromKbom);
+
+module.exports = router;

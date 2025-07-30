@@ -51,6 +51,8 @@ const KbomDataManager: React.FC = () => {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [selectedImportData, setSelectedImportData] = useState<KbomData | null>(null);
+  const [importCustomerSoDialogOpen, setImportCustomerSoDialogOpen] = useState(false);
+  const [selectedCustomerSoData, setSelectedCustomerSoData] = useState<KbomData | null>(null);
 
   // Load kbom data on component mount
   useEffect(() => {
@@ -99,13 +101,32 @@ const KbomDataManager: React.FC = () => {
         projectName: data.project_name,
         tasks: data.tasks
       });
-      setMessage({ 
-        type: 'success', 
-        text: `Imported ${result.tasksCreated} tasks for ${data.customer}/${data.project_name}` 
+      setMessage({
+        type: 'success',
+        text: `Imported ${result.tasksCreated} tasks for ${data.customer}/${data.project_name}`
       });
       setImportDialogOpen(false);
     } catch (error) {
       setMessage({ type: 'error', text: 'Failed to import selected data' });
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  const handleImportCustomerAndSo = async (data: KbomData) => {
+    setImporting(true);
+    try {
+      const result = await kbomService.importCustomerAndSoFromKbom({
+        customerName: data.customer,
+        projectName: data.project_name
+      });
+      setMessage({
+        type: 'success',
+        text: `Imported customer "${result.customer.name}" and project "${result.project.project_number}"`
+      });
+      setImportCustomerSoDialogOpen(false);
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Failed to import customer and SO' });
     } finally {
       setImporting(false);
     }
@@ -214,17 +235,32 @@ const KbomDataManager: React.FC = () => {
                   <Typography variant="subtitle2">
                     Tasks:
                   </Typography>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    startIcon={<AddIcon />}
-                    onClick={() => {
-                      setSelectedImportData(item);
-                      setImportDialogOpen(true);
-                    }}
-                  >
-                    Import to Project Management
-                  </Button>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      startIcon={<AddIcon />}
+                      onClick={() => {
+                        setSelectedImportData(item);
+                        setImportDialogOpen(true);
+                      }}
+                      disabled={importing}
+                    >
+                      Import with Tasks
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => {
+                        setSelectedCustomerSoData(item);
+                        setImportCustomerSoDialogOpen(true);
+                      }}
+                      disabled={importing}
+                    >
+                      Import Customer & SO Only
+                    </Button>
+                  </Box>
                 </Box>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                   {item.tasks.map((task, taskIndex) => (
@@ -280,8 +316,41 @@ const KbomDataManager: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Import Customer & SO Only Dialog */}
+      <Dialog open={importCustomerSoDialogOpen} onClose={() => setImportCustomerSoDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Import Customer & SO Only</DialogTitle>
+        <DialogContent>
+          {selectedCustomerSoData && (
+            <Box>
+              <Typography variant="body1" gutterBottom>
+                <strong>Customer:</strong> {selectedCustomerSoData.customer}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                <strong>SO (Project):</strong> {selectedCustomerSoData.project_name}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                This will create the customer and project without importing any tasks.
+                You can add tasks manually later or import them separately.
+              </Typography>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setImportCustomerSoDialogOpen(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => selectedCustomerSoData && handleImportCustomerAndSo(selectedCustomerSoData)}
+            variant="contained"
+            disabled={importing}
+          >
+            {importing ? <CircularProgress size={20} /> : 'Import Customer & SO'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
 
-export default KbomDataManager; 
+export default KbomDataManager;
