@@ -146,6 +146,7 @@ const KbomDataManager: React.FC = () => {
       
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
         Load and import data from the KBOM database. SO serves as project name, customer as customer, and source_file as tasks.
+        You can import with tasks or just customer and SO only.
       </Typography>
 
       {message && (
