@@ -93,14 +93,18 @@ const kbomController = {
       if (!project) {
         project = await projectModel.createProject({
           project_number: projectName,
-          title: projectName,
-          description: `Project imported from kbom for ${customerName}`,
           customer_id: customer.id,
-          status: 'In Progress',
+          status: 'Pending',
           start_date: new Date(),
-          end_date: null,
-          budget: 0,
-          manager_id: req.user.id
+          expected_completion_date: null,
+          actual_completion_date: null,
+          shipping_date: null,
+          order_date: null,
+          total_budget: 0,
+          progress: 0,
+          notes: `Project imported from kbom for ${customerName}`,
+          project_manager_id: req.user.id,
+          project_type: 'KBOM Import'
         });
       }
 
@@ -162,14 +166,18 @@ const kbomController = {
           if (!project) {
             project = await projectModel.createProject({
               project_number: item.project_name,
-              title: item.project_name,
-              description: `Project imported from kbom for ${item.customer}`,
               customer_id: customer.id,
-              status: 'Active',
+              status: 'Pending',
               start_date: new Date(),
-              end_date: null,
-              budget: 0,
-              manager_id: req.user.id
+              expected_completion_date: null,
+              actual_completion_date: null,
+              shipping_date: null,
+              order_date: null,
+              total_budget: 0,
+              progress: 0,
+              notes: `Project imported from kbom for ${item.customer}`,
+              project_manager_id: req.user.id,
+              project_type: 'KBOM Import'
             });
           }
 
@@ -241,14 +249,18 @@ const kbomController = {
       if (!project) {
         project = await projectModel.createProject({
           project_number: projectName,
-          title: projectName,
-          description: `Project imported from kbom for ${customerName}`,
           customer_id: customer.id,
-          status: 'Active',
+          status: 'Pending',
           start_date: new Date(),
-          end_date: null,
-          budget: 0,
-          manager_id: req.user.id
+          expected_completion_date: null,
+          actual_completion_date: null,
+          shipping_date: null,
+          order_date: null,
+          total_budget: 0,
+          progress: 0,
+          notes: `Project imported from kbom for ${customerName}`,
+          project_manager_id: req.user.id,
+          project_type: 'KBOM Import'
         });
       }
 
