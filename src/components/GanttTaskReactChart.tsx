@@ -26,6 +26,8 @@ interface GanttTaskReactChartProps {
   onTaskUpdate?: (task: AppTask) => void;
   readOnly?: boolean;
   viewMode?: ViewMode; // Add viewMode prop
+  expandedProjects?: Set<string>;
+  setExpandedProjects?: (projects: Set<string>) => void;
 }
 
 const GanttTaskReactChart: React.FC<GanttTaskReactChartProps> = ({
@@ -38,9 +40,13 @@ const GanttTaskReactChart: React.FC<GanttTaskReactChartProps> = ({
   onTaskUpdate,
   readOnly = false,
   viewMode = ViewMode.Month, // Default to Month view
+  expandedProjects: externalExpandedProjects,
+  setExpandedProjects: externalSetExpandedProjects,
 }) => {
-  // Add state for expanded projects
-  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
+  // Use external expanded projects state if provided, otherwise use local state
+  const [localExpandedProjects, setLocalExpandedProjects] = useState<Set<string>>(new Set());
+  const expandedProjects = externalExpandedProjects || localExpandedProjects;
+  const setExpandedProjects = externalSetExpandedProjects || setLocalExpandedProjects;
   const [view, setView] = useState<ViewMode>(viewMode);
   const [isChecked, setIsChecked] = useState<boolean>(true);
 
@@ -116,17 +122,15 @@ const GanttTaskReactChart: React.FC<GanttTaskReactChartProps> = ({
   const handleProjectClick = useCallback((task: Task) => {
     if (task.type === 'project') {
       const projectId = task.id;
-      setExpandedProjects(prev => {
-        const newSet = new Set(prev);
-        if (newSet.has(projectId)) {
-          newSet.delete(projectId);
-        } else {
-          newSet.add(projectId);
-        }
-        return newSet;
-      });
+      const newSet = new Set(expandedProjects);
+      if (newSet.has(projectId)) {
+        newSet.delete(projectId);
+      } else {
+        newSet.add(projectId);
+      }
+      setExpandedProjects(newSet);
     }
-  }, []);
+  }, [expandedProjects, setExpandedProjects]);
 
   // Track if a resize/reschedule operation is in progress
   const [isResizing, setIsResizing] = useState(false);

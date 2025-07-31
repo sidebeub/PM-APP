@@ -39,6 +39,9 @@ const GanttView: React.FC = () => {
   // State to track if a task update is in progress
   const [isUpdating, setIsUpdating] = useState(false);
 
+  // State for expanded projects (moved from GanttTaskReactChart to persist across re-renders)
+  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
+
   // Ref to store pending updates
   const pendingUpdatesRef = useRef<Task[]>([]);
   const retryCount = useRef<Record<number, number>>({});
@@ -392,6 +395,8 @@ const GanttView: React.FC = () => {
             onTaskClick={handleTaskClick}
             onTaskUpdate={handleTaskUpdate}
             onMilestoneClick={handleMilestoneClick}
+            expandedProjects={expandedProjects}
+            setExpandedProjects={setExpandedProjects}
           />
         )}
       </div>

@@ -287,6 +287,8 @@ const tasksSlice = createSlice({
     });
     builder.addCase(updateTask.fulfilled, (state, action) => {
       state.loading = false;
+      console.log('updateTask.fulfilled - action.payload:', action.payload);
+
       if (action.payload && action.payload.id) {
         const taskId = action.payload.id;
 
@@ -297,10 +299,17 @@ const tasksSlice = createSlice({
           dependencies: action.payload.task?.dependencies || []
         };
 
+        console.log('updateTask.fulfilled - updatedTask:', updatedTask);
+
         // Update task in tasks array
         const index = state.tasks.findIndex(t => t && t.id === taskId);
+        console.log('updateTask.fulfilled - task index:', index, 'tasks length:', state.tasks.length);
+
         if (index !== -1) {
           state.tasks[index] = updatedTask;
+          console.log('updateTask.fulfilled - task updated in array');
+        } else {
+          console.warn('updateTask.fulfilled - task not found in array');
         }
 
         // Update current task if it matches
