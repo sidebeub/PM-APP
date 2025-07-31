@@ -103,6 +103,17 @@ const taskController = {
         progress: taskData.progress
       };
 
+      // Validate and clamp progress value to be within 0-100 range
+      if (cleanTaskData.progress !== undefined && cleanTaskData.progress !== null) {
+        const progressNum = Number(cleanTaskData.progress);
+        if (isNaN(progressNum)) {
+          cleanTaskData.progress = 0;
+        } else {
+          // Clamp progress between 0 and 100
+          cleanTaskData.progress = Math.max(0, Math.min(100, Math.round(progressNum)));
+        }
+      }
+
       // Remove undefined values
       Object.keys(cleanTaskData).forEach(key => {
         if (cleanTaskData[key] === undefined) {

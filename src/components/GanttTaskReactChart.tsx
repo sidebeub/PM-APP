@@ -175,7 +175,7 @@ const GanttTaskReactChart: React.FC<GanttTaskReactChartProps> = ({
           ...appTask,
           start_date: task.start.toISOString(),
           due_date: task.end.toISOString(),
-          progress: Math.round(task.progress * 100),
+          progress: Math.max(0, Math.min(100, Math.round(task.progress * 100))),
         };
 
         // Store the task for debounced update
@@ -210,7 +210,7 @@ const GanttTaskReactChart: React.FC<GanttTaskReactChartProps> = ({
         // Only send the progress field that changed
         const updatedTask: AppTask = {
           ...appTask,
-          progress: Math.round(task.progress * 100),
+          progress: Math.max(0, Math.min(100, Math.round(task.progress * 100))),
         };
 
         // Store the task for debounced update
@@ -523,7 +523,7 @@ const GanttTaskReactChart: React.FC<GanttTaskReactChartProps> = ({
       ...originalTask,
       start_date: task.start.toISOString(),
       due_date: task.end.toISOString(),
-      progress: Math.round(task.progress * 100)
+      progress: Math.max(0, Math.min(100, Math.round(task.progress * 100)))
     };
 
     // Store the task for debounced update
