@@ -148,7 +148,7 @@ const GanttView: React.FC = () => {
     };
 
     fetchData();
-  }, [dispatch, fetchTaskDependencies, updateTaskDependencies]);
+  }, [dispatch]);
 
   // Initialize dependencies when tasks are loaded
   useEffect(() => {
@@ -198,7 +198,7 @@ const GanttView: React.FC = () => {
         });
       }
     }
-  }, [tasks, dependencies, dispatch, updateTaskDependencies]);
+  }, [tasks, dependencies, dispatch]);
 
   // Update dependency cache when dependencies change
   useEffect(() => {

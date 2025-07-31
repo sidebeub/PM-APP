@@ -289,7 +289,7 @@ const tasksSlice = createSlice({
       state.loading = false;
       if (action.payload && action.payload.id) {
         const taskId = action.payload.id;
-        
+
         // Ensure we have a valid task object with dependencies
         const updatedTask = {
           ...action.payload.task,
@@ -307,7 +307,7 @@ const tasksSlice = createSlice({
         if (state.currentTask?.id === taskId) {
           state.currentTask = updatedTask;
         }
-        
+
         // Update dependencies in state if they were changed
         if (action.payload.task?.dependencies !== undefined) {
           state.dependencies[taskId] = action.payload.task.dependencies.map((depId: number) => ({
