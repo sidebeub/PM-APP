@@ -79,36 +79,73 @@ const taskController = {
     try {
       const { id } = req.params;
       const taskData = req.body;
-      
+
+      console.log(`Updating task ${id} with data:`, JSON.stringify(taskData, null, 2));
+
       // Get the current task to compare changes
       const currentTask = await taskModel.getTaskById(id);
       if (!currentTask) {
         return res.status(404).json({ error: 'Task not found' });
       }
-      
-      const updatedTask = await taskModel.updateTask(id, taskData);
-      
+
+      // Clean the task data to remove any invalid fields
+      const cleanTaskData = {
+        project_id: taskData.project_id,
+        title: taskData.title,
+        description: taskData.description,
+        assignee_id: taskData.assignee_id,
+        status: taskData.status,
+        priority: taskData.priority,
+        department: taskData.department,
+        start_date: taskData.start_date,
+        due_date: taskData.due_date,
+        completed_date: taskData.completed_date,
+        progress: taskData.progress
+      };
+
+      // Remove undefined values
+      Object.keys(cleanTaskData).forEach(key => {
+        if (cleanTaskData[key] === undefined) {
+          delete cleanTaskData[key];
+        }
+      });
+
+      console.log(`Cleaned task data:`, JSON.stringify(cleanTaskData, null, 2));
+
+      const updatedTask = await taskModel.updateTask(id, cleanTaskData);
+
       // Only notify if there are actual changes
-      const hasChanges = Object.keys(taskData).some(key => 
+      const hasChanges = Object.keys(cleanTaskData).some(key =>
         JSON.stringify(currentTask[key]) !== JSON.stringify(updatedTask[key])
       );
-      
+
       // Get WebSocket server instance and notify clients only if there are changes
       const wss = req.app.get('wss');
       if (wss && hasChanges) {
         wss.notifyTaskUpdated(updatedTask);
       }
-      
+
       res.status(200).json(updatedTask);
     } catch (error) {
       console.error(`Error updating task with ID ${req.params.id}:`, error);
-      
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        detail: error.detail,
+        stack: error.stack
+      });
+
       // Handle foreign key constraint violation
       if (error.code === '23503') {
         return res.status(400).json({ error: 'Referenced project or user does not exist' });
       }
-      
-      res.status(500).json({ error: 'Failed to update task' });
+
+      // Handle invalid input syntax
+      if (error.code === '22P02') {
+        return res.status(400).json({ error: 'Invalid data format provided' });
+      }
+
+      res.status(500).json({ error: 'Failed to update task', details: error.message });
     }
   },
 

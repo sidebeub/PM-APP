@@ -170,6 +170,7 @@ const GanttTaskReactChart: React.FC<GanttTaskReactChartProps> = ({
       const taskId = task.id.startsWith('task-') ? Number(task.id.replace('task-', '')) : -1;
       const appTask = tasks.find(t => t.id === taskId);
       if (appTask) {
+        // Only send the fields that actually changed
         const updatedTask: AppTask = {
           ...appTask,
           start_date: task.start.toISOString(),
@@ -206,6 +207,7 @@ const GanttTaskReactChart: React.FC<GanttTaskReactChartProps> = ({
       const taskId = task.id.startsWith('task-') ? Number(task.id.replace('task-', '')) : -1;
       const appTask = tasks.find(t => t.id === taskId);
       if (appTask) {
+        // Only send the progress field that changed
         const updatedTask: AppTask = {
           ...appTask,
           progress: Math.round(task.progress * 100),
