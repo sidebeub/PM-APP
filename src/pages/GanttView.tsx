@@ -297,12 +297,6 @@ const GanttView: React.FC = () => {
           // Clear pending updates
           pendingUpdates.current.clear();
 
-          // Fetch the latest tasks to ensure we have the most up-to-date data
-          await dispatch(fetchTasks()).unwrap();
-
-          // Force chart update by incrementing the key
-          setChartKey(prev => prev + 1);
-
           // Reset updating state
           setIsUpdating(false);
 
