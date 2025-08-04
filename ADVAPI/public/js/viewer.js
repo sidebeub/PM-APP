@@ -15,8 +15,14 @@ class ViewerManager {
       
       // Get an access token for the viewer
       const response = await fetch('/api/advapi/auth/token');
+
+      if (!response.ok) {
+        console.error('Failed to get APS token from server. Status:', response.status);
+        throw new Error(`Failed to get access token: ${response.status} ${response.statusText}`);
+      }
+
       const json = await response.json();
-      
+
       if (!json.access_token) {
         throw new Error('Failed to get access token');
       }

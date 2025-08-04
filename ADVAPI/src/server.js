@@ -16,9 +16,9 @@ const DB_HOST = 'backupapril272025.cdc2o6m8gcel.us-west-2.rds.amazonaws.com';
 const DB_PORT = 5432;
 const DB_NAME = process.env.DB_NAME || 'BOMs';
 
-// APS credentials
-process.env.APS_CLIENT_ID = process.env.APS_CLIENT_ID || '2f0mdkopjvlgru10nk1asdhf6uzvjswd4tpwxdqx8s7ywurd';
-process.env.APS_CLIENT_SECRET = process.env.APS_CLIENT_SECRET || 'QYhMOyF9Eq4nMuqO';
+// APS credentials - use environment variables or fallback to working credentials
+process.env.APS_CLIENT_ID = process.env.APS_CLIENT_ID || '2F0MDKOpJvlGrU10nK1AsdhF6uzVJsWD4tPwXDqX8S7ywURd';
+process.env.APS_CLIENT_SECRET = process.env.APS_CLIENT_SECRET || 'pz77e5bSrDRQcy8WIcD2Ff5ARyQwGN3tPQHvSWNdz8qBhk9B2vI1yGzwW54SeKsI';
 
 // Store database credentials
 let dbCredentials = null;
