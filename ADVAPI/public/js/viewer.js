@@ -14,7 +14,7 @@ class ViewerManager {
       console.log('Initializing viewer with simplified approach');
       
       // Get an access token for the viewer
-      const response = await fetch('/api/auth/token');
+      const response = await fetch('/api/advapi/auth/token');
       const json = await response.json();
       
       if (!json.access_token) {

@@ -119,7 +119,7 @@ class ModelManager {
       }
       
       // Call the refresh API endpoint
-      const response = await fetch('/api/models/refresh');
+      const response = await fetch('/api/advapi/models/refresh');
       
       if (!response.ok) {
         throw new Error(`Failed to refresh models: ${response.status} ${response.statusText}`);
@@ -240,8 +240,8 @@ class ModelManager {
           }
           
           // Upload the single file
-          console.log('Upload debug - Sending POST request to /api/models/upload-single');
-          const response = await fetch('/api/models/upload-single', {
+          console.log('Upload debug - Sending POST request to /api/advapi/models/upload-single');
+          const response = await fetch('/api/advapi/models/upload-single', {
             method: 'POST',
             headers: headers,
             body: formData
@@ -301,8 +301,8 @@ class ModelManager {
                 console.log(`Translation debug - Added password to request headers for model ${model.id}`);
               }
               
-              console.log(`Translation debug - Sending POST request to /api/models/${model.id}/translate`);
-              await fetch(`/api/models/${model.id}/translate`, {
+              console.log(`Translation debug - Sending POST request to /api/advapi/models/${model.id}/translate`);
+              await fetch(`/api/advapi/models/${model.id}/translate`, {
                 method: 'POST',
                 headers: headers,
                 body: formData
@@ -342,8 +342,8 @@ class ModelManager {
             console.log(`Translation debug - Added password to request headers for single model ${result.id}`);
           }
           
-          console.log(`Translation debug - Sending POST request to /api/models/${result.id}/translate`);
-          const translateResponse = await fetch(`/api/models/${result.id}/translate`, {
+          console.log(`Translation debug - Sending POST request to /api/advapi/models/${result.id}/translate`);
+          const translateResponse = await fetch(`/api/advapi/models/${result.id}/translate`, {
             method: 'POST',
             headers: translateHeaders,
             body: translateFormData
@@ -380,7 +380,7 @@ class ModelManager {
       try {
         // First try the regular endpoint
         console.log('Trying to fetch models from regular endpoint...');
-        response = await fetch('/api/models');
+        response = await fetch('/api/advapi/models');
         console.log('Response status:', response.status);
         
         if (response.ok) {
@@ -400,7 +400,7 @@ class ModelManager {
           
           console.warn('Trying test endpoint as fallback...');
           // If regular endpoint fails, try the test endpoint
-          const testResponse = await fetch('/api/models/test');
+          const testResponse = await fetch('/api/advapi/models/test');
           console.log('Test endpoint response status:', testResponse.status);
           
           if (testResponse.ok) {
@@ -799,7 +799,7 @@ class ModelManager {
     this.pollIntervals[modelId] = setInterval(async () => {
       try {
         console.log(`Checking translation status for model ${modelId}...`);
-        const response = await fetch(`/api/models/${modelId}/status`);
+        const response = await fetch(`/api/advapi/models/${modelId}/status`);
         if (!response.ok) {
           throw new Error('Failed to get translation status');
         }
@@ -941,7 +941,7 @@ class ModelManager {
       console.log(`Sending delete request for model ${modelId}...`);
       
       // Send delete request to API with password
-      const response = await fetch(`/api/models/${modelId}?password=${encodeURIComponent(password)}`, {
+      const response = await fetch(`/api/advapi/models/${modelId}?password=${encodeURIComponent(password)}`, {
         method: 'DELETE',
         headers: {
           'X-Upload-Password': password
@@ -1100,7 +1100,7 @@ class ModelManager {
         console.log('Edit form debug - Form data params:', Array.from(params.keys()));
         
         // Send update request to API
-        console.log(`Edit form debug - Sending PATCH request to /api/models/${modelId}/metadata`);
+        console.log(`Edit form debug - Sending PATCH request to /api/advapi/models/${modelId}/metadata`);
         console.log('Edit form debug - Content-Type:', 'application/x-www-form-urlencoded');
         
         // Add password to headers as a fallback mechanism
@@ -1113,7 +1113,7 @@ class ModelManager {
           console.log('Edit form debug - Added password to request headers as fallback');
         }
         
-        const response = await fetch(`/api/models/${modelId}/metadata`, {
+        const response = await fetch(`/api/advapi/models/${modelId}/metadata`, {
           method: 'PATCH',
           headers: headers,
           body: params

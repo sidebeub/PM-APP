@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
           console.log(`Loading model with URN: ${model.urn}`);
           // Get detailed model information for KBOM data
-          fetch(`/api/models/${model.id}`)
+          fetch(`/api/advapi/models/${model.id}`)
             .then(response => response.json())
             .then(detailedModel => {
               // Pass the full model object to the viewer
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   formData.append('password', 'admin123'); // Hardcoded for convenience
                   
                   // Send translate request
-                  const response = await fetch(`/api/models/${model.id}/translate`, {
+                  const response = await fetch(`/api/advapi/models/${model.id}/translate`, {
                     method: 'POST',
                     headers: {
                       'X-Upload-Password': 'admin123' // Also send in header
