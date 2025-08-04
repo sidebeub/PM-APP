@@ -36,11 +36,27 @@ class ViewerManager {
         accessToken: this.token
       };
 
+      // Check if Autodesk viewer library is loaded
+      if (typeof Autodesk === 'undefined' || !Autodesk.Viewing) {
+        throw new Error('Autodesk Viewer library not loaded');
+      }
+
+      console.log('Initializing Autodesk viewer...');
+
       // Initialize the viewer
       await new Promise((resolve, reject) => {
         Autodesk.Viewing.Initializer(options, () => {
+          console.log('Autodesk.Viewing.Initializer callback called');
+
           const container = document.getElementById(this.containerId);
-          
+          if (!container) {
+            console.error('Viewer container not found:', this.containerId);
+            reject(new Error('Viewer container not found'));
+            return;
+          }
+
+          console.log('Creating viewer in container:', this.containerId);
+
           // Configure with minimal settings
           const config = {
             // Using minimal extensions to avoid issues
@@ -49,19 +65,30 @@ class ViewerManager {
               viewCubeUi: false
             }
           };
-          
-          // Create and start the viewer
-          this.viewer = new Autodesk.Viewing.GuiViewer3D(container, config);
-          const started = this.viewer.start();
-          
-          if (started > 0) {
-            console.error('Failed to start the viewer:', started);
-            reject(new Error('Failed to start viewer'));
-            return;
+
+          try {
+            // Create and start the viewer
+            this.viewer = new Autodesk.Viewing.GuiViewer3D(container, config);
+            console.log('GuiViewer3D created, starting viewer...');
+
+            const started = this.viewer.start();
+            console.log('Viewer start result:', started);
+
+            if (started > 0) {
+              console.error('Failed to start the viewer:', started);
+              reject(new Error('Failed to start viewer'));
+              return;
+            }
+
+            console.log('Viewer initialized successfully');
+            resolve();
+          } catch (error) {
+            console.error('Error creating/starting viewer:', error);
+            reject(error);
           }
-          
-          console.log('Viewer initialized successfully');
-          resolve();
+        }, (error) => {
+          console.error('Autodesk.Viewing.Initializer failed:', error);
+          reject(new Error('Failed to initialize Autodesk viewer'));
         });
       });
       
