@@ -1,0 +1,257 @@
+<html>
+<head>
+<title>ADVAPI Controller</title>
+<meta http-equiv="x-ua-compatible" content="ie=10">
+<hta:application 
+    id="ADVAPI_Tray"
+    applicationname="ADVAPI Controller"
+    icon="favicon.ico"
+    showintaskbar="no"
+    singleinstance="yes"
+    sysmenu="yes"
+    windowstate="minimize"
+/>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        padding: 10px;
+        background-color: #f0f0f0;
+    }
+    button {
+        width: 120px;
+        padding: 5px;
+        margin: 5px;
+        cursor: pointer;
+    }
+    .header {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .status {
+        margin: 10px 0;
+    }
+</style>
+<script language="VBScript">
+    Dim oShell, serverProcess, serverStatus, fso, serverPID
+
+    Sub Window_OnLoad
+        Set oShell = CreateObject("WScript.Shell")
+        Set fso = CreateObject("Scripting.FileSystemObject")
+        
+        ' Create system tray icon
+        CreateSystemTrayIcon
+        
+        ' Check if server process is already running
+        CheckServerProcessStatus
+        
+        ' Set the window to be nearly invisible
+        window.resizeTo 1, 1
+        window.moveTo -100, -100
+    End Sub
+
+    Sub CreateSystemTrayIcon
+        ' Create system tray icon
+        ' This is done using the VBScript Shell
+        Set objWshShell = CreateObject("Wscript.Shell")
+        
+        ' Create the shortcut that will be in the system tray
+        Set objShortcut = objWshShell.CreateShortcut(objWshShell.SpecialFolders("Desktop") & "\~$TEMP_ADVAPI.lnk")
+        objShortcut.TargetPath = "mshta.exe"
+        objShortcut.Arguments = """" & window.location.href & """"
+        objShortcut.WorkingDirectory = objWshShell.CurrentDirectory
+        objShortcut.WindowStyle = 7  ' Minimized
+        objShortcut.IconLocation = "favicon.ico"
+        objShortcut.Description = "ADVAPI Controller"
+        objShortcut.Save
+        
+        ' Delete the temporary shortcut
+        On Error Resume Next
+        fso.DeleteFile objWshShell.SpecialFolders("Desktop") & "\~$TEMP_ADVAPI.lnk"
+    End Sub
+
+    Sub CheckServerProcessStatus
+        Dim objWMIService, colProcesses, objProcess
+        
+        On Error Resume Next
+        Set objWMIService = GetObject("winmgmts:\\.\oot\\cimv2")
+        
+        If Err.Number <> 0 Then
+            MsgBox "Error connecting to WMI: " & Err.Description, vbExclamation, "ADVAPI Controller"
+            Err.Clear
+            serverStatus = "Unknown"
+            serverPID = 0
+            Exit Sub
+        End If
+        
+        Set colProcesses = objWMIService.ExecQuery("Select * from Win32_Process Where Name='advapi.exe'")
+        
+        If Err.Number <> 0 Then
+            MsgBox "Error querying processes: " & Err.Description, vbExclamation, "ADVAPI Controller"
+            Err.Clear
+            serverStatus = "Unknown"
+            serverPID = 0
+            Exit Sub
+        End If
+        
+        If colProcesses.Count > 0 Then
+            serverStatus = "Running"
+            For Each objProcess in colProcesses
+                serverPID = objProcess.ProcessId
+                Exit For
+            Next
+        Else
+            serverStatus = "Stopped"
+            serverPID = 0
+        End If
+        
+        ' Update the status text in the UI
+        If Not IsNull(document.getElementById("serverStatusText")) Then
+            document.getElementById("serverStatusText").innerText = serverStatus
+        End If
+    End Sub
+
+    Sub StartServer
+        If serverStatus = "Stopped" Or serverStatus = "Unknown" Then
+            ' Start the server using the regular start script
+            Set WshShell = CreateObject("WScript.Shell")
+            appPath = oShell.CurrentDirectory & "\advapi.exe"
+            WshShell.Run appPath, 0, False  ' 0 = hidden window, False = don't wait for completion
+            
+            ' Wait for server to start
+            WScript.Sleep 3000
+            CheckServerProcessStatus
+            
+            ' Open browser
+            WshShell.Run "http://localhost:3002/db-login.html", 1, False
+            
+            MsgBox "ADVAPI server started successfully. The login page will open in your browser.", vbInformation, "ADVAPI Controller"
+        Else
+            MsgBox "ADVAPI server is already running.", vbInformation, "ADVAPI Controller"
+        End If
+    End Sub
+
+    Sub StopServer
+        If serverStatus = "Running" Then
+            ' Stop the server process
+            Dim objWMIService, colProcesses
+            
+            On Error Resume Next
+            Set objWMIService = GetObject("winmgmts:\\.\oot\\cimv2")
+            
+            If Err.Number <> 0 Then
+                MsgBox "Error connecting to WMI: " & Err.Description, vbExclamation, "ADVAPI Controller"
+                Err.Clear
+                Exit Sub
+            End If
+            
+            Set colProcesses = objWMIService.ExecQuery("Select * from Win32_Process Where Name='advapi.exe'")
+            
+            If Err.Number <> 0 Then
+                MsgBox "Error querying processes: " & Err.Description, vbExclamation, "ADVAPI Controller"
+                Err.Clear
+                Exit Sub
+            End If
+            
+            For Each objProcess in colProcesses
+                objProcess.Terminate(0)
+            Next
+            
+            serverStatus = "Stopped"
+            serverPID = 0
+            
+            ' Update the status text in the UI
+            If Not IsNull(document.getElementById("serverStatusText")) Then
+                document.getElementById("serverStatusText").innerText = serverStatus
+            End If
+            
+            MsgBox "ADVAPI server stopped successfully.", vbInformation, "ADVAPI Controller"
+        Else
+            MsgBox "ADVAPI server is not running.", vbInformation, "ADVAPI Controller"
+        End If
+    End Sub
+
+    Sub OpenBrowser
+        Set WshShell = CreateObject("WScript.Shell")
+        WshShell.Run "http://localhost:3002/db-login.html", 1, False
+    End Sub
+
+    Sub ExitApplication
+        Dim response
+        
+        If serverStatus = "Running" Then
+            response = MsgBox("The ADVAPI server is still running. Do you want to stop it before exiting?", vbYesNoCancel + vbQuestion, "ADVAPI Controller")
+            
+            If response = vbYes Then
+                StopServer
+                window.close
+            ElseIf response = vbNo Then
+                window.close
+            End If
+        Else
+            window.close
+        End If
+    End Sub
+
+    ' Handle the system tray menu
+    Sub document_oncontextmenu
+        window.event.returnValue = False
+        
+        Dim objPopupMenu, hPopupMenu, menuItem
+        
+        On Error Resume Next
+        ' Create popup menu
+        Set objPopupMenu = CreateObject("WScript.Shell.1")
+        hPopupMenu = objPopupMenu.CreatePopup
+        
+        If Err.Number <> 0 Then
+            MsgBox "Error creating system tray menu: " & Err.Description, vbExclamation, "ADVAPI Controller"
+            Err.Clear
+            Exit Sub
+        End If
+        
+        ' Add menu items
+        If serverStatus = "Running" Then
+            menuItem = "Open ADVAPI Login Page"
+            hPopupMenu.AddItem menuItem, 1
+            menuItem = "Stop ADVAPI Server"
+            hPopupMenu.AddItem menuItem, 2
+        Else
+            menuItem = "Start ADVAPI Server"
+            hPopupMenu.AddItem menuItem, 3
+        End If
+        
+        ' Add separator
+        hPopupMenu.AddSeparator
+        
+        ' Add exit item
+        menuItem = "Exit"
+        hPopupMenu.AddItem menuItem, 9
+        
+        ' Show the menu
+        Dim result
+        result = hPopupMenu.Show
+        
+        ' Handle menu selection
+        Select Case result
+            Case 1 ' Open ADVAPI Login Page
+                OpenBrowser
+            Case 2 ' Stop ADVAPI Server
+                StopServer
+            Case 3 ' Start ADVAPI Server
+                StartServer
+            Case 9 ' Exit
+                ExitApplication
+        End Select
+    End Sub
+</script>
+</head>
+<body>
+<div class="header">ADVAPI Controller (System Tray)</div>
+<div class="status">Server Status: <span id="serverStatusText"></span></div>
+<button onclick="StartServer">Start Server</button>
+<button onclick="OpenBrowser">Open Browser</button>
+<button onclick="StopServer">Stop Server</button>
+<button onclick="ExitApplication">Exit</button>
+</body>
+</html>

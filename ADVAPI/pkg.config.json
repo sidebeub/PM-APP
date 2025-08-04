@@ -1,0 +1,10 @@
+{
+  "targets": ["node14-win-x64"],
+  "outputPath": "dist",
+  "assets": [
+    "public/**/*",
+    "src/**/*",
+    "uploads/**/*",
+    ".env"
+  ]
+}

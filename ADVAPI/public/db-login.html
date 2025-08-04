@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autodesk Viewer App - Login</title>
+  <link rel="icon" href="/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    
+    .login-container {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      width: 400px;
+      max-width: 90%;
+    }
+    
+    .login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .login-header h1 {
+      color: #1a1a1a;
+      margin: 0;
+      font-size: 28px;
+      font-family: 'Orbitron', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    
+    .login-header p {
+      color: #666;
+      margin-top: 10px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #333;
+    }
+    
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    
+    button {
+      background-color: #1a1a1a;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    
+    button:hover {
+      background-color: #333;
+    }
+    
+    button:active {
+      transform: translateY(1px);
+    }
+    
+    .error-message {
+      color: #d9534f;
+      margin-top: 20px;
+      text-align: center;
+      display: none;
+    }
+    
+    .error-help {
+      color: #856404;
+      background-color: #fff3cd;
+      border: 1px solid #ffeeba;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+      font-size: 14px;
+      display: none;
+    }
+    
+    .db-info {
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      padding: 15px;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .db-info p {
+      margin: 5px 0;
+    }
+    
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid #0077c2;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 10px;
+      display: none;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <img src="/images/1knightlogo_Nbg_(Small).svg" alt="1Knight Logo" style="height: 60px; margin-bottom: 15px;">
+      <h1>Autodesk Viewer App</h1>
+      <p>Enter your database credentials to continue</p>
+    </div>
+    
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      
+      <button type="submit">
+        <span class="spinner" id="loginSpinner"></span>
+        Login to Application
+      </button>
+      
+      <div class="error-message" id="errorMessage"></div>
+      <div class="error-help" id="errorHelp"></div>
+    </form>
+    
+    <div class="db-info">
+      <p>Please enter your database credentials to connect.</p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const loginForm = document.getElementById('loginForm');
+      const errorMessage = document.getElementById('errorMessage');
+      const errorHelp = document.getElementById('errorHelp');
+      const loginSpinner = document.getElementById('loginSpinner');
+      
+      // Add a URL parameter check to bypass automatic redirect
+      const urlParams = new URLSearchParams(window.location.search);
+      const maintMode = urlParams.get('maint');
+      
+      // Only check status if we're not in maintenance mode
+      if (maintMode !== 'true') {
+        // Check if we're already connected
+        checkDatabaseStatus();
+      } else {
+        console.log('Maintenance mode active, skipping automatic database check');
+        // Display a note that we're in maintenance mode
+        const noteElem = document.createElement('div');
+        noteElem.style.backgroundColor = '#fff3cd';
+        noteElem.style.color = '#856404';
+        noteElem.style.padding = '10px';
+        noteElem.style.borderRadius = '4px';
+        noteElem.style.marginTop = '15px';
+        noteElem.innerHTML = 'Maintenance mode active. Automatic database check disabled.';
+        loginForm.parentNode.insertBefore(noteElem, loginForm.nextSibling);
+      }
+      
+      loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Show spinner
+        loginSpinner.style.display = 'inline-block';
+        errorMessage.style.display = 'none';
+        errorHelp.style.display = 'none';
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        
+        try {
+          const response = await fetch('/api/system/db/connect', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok && data.success) {
+            // Redirect to main app
+            window.location.href = '/';
+          } else {
+            // Show error message
+            errorMessage.textContent = data.message || 'Failed to connect to database';
+            errorMessage.style.display = 'block';
+            
+            // Show help text if available
+            if (data.helpText) {
+              errorHelp.textContent = data.helpText;
+              errorHelp.style.display = 'block';
+            }
+            
+            // If we have a specific error code, add more info
+            if (data.errorCode === '28P01') {
+              // Authentication error
+              username.focus();
+            } else if (data.errorCode === '28000') {
+              // RDS Security configuration issue
+              const noteElement = document.createElement('p');
+              noteElement.innerHTML = '<strong>RDS Security Issue:</strong> The PostgreSQL server is not configured to accept connections from this application.<br>' +
+                'Please check the <a href="/rds-security-guide" target="_blank">RDS Security Guide</a> for instructions on how to fix this.<br>' +
+                'Common solutions:<br>' +
+                '1. Update the inbound rules in your RDS security group<br>' +
+                '2. Modify PostgreSQL parameter group settings';
+              errorHelp.appendChild(noteElement);
+            } else if (data.errorCode === '3D000') {
+              // Database doesn't exist
+              const noteElement = document.createElement('p');
+              noteElement.innerHTML = '<strong>Need help?</strong> To create the database in pgAdmin:<br>' +
+                '1. Right-click on "Databases" and select "Create" > "Database..."<br>' +
+                '2. Enter "BOMs" as the name<br>' + 
+                '3. Click "Save"';
+              errorHelp.appendChild(noteElement);
+            }
+          }
+        } catch (error) {
+          console.error('Error connecting to database:', error);
+          errorMessage.textContent = 'Error connecting to database. Please try again.';
+          errorMessage.style.display = 'block';
+        } finally {
+          // Hide spinner
+          loginSpinner.style.display = 'none';
+        }
+      });
+      
+      async function checkDatabaseStatus() {
+        try {
+          const response = await fetch('/api/system/db/status');
+          const data = await response.json();
+          
+          if (data.connected) {
+            // Already connected, redirect to main app
+            window.location.href = '/';
+          }
+        } catch (error) {
+          console.error('Error checking database status:', error);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

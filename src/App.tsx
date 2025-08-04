@@ -20,6 +20,7 @@ import RoleProtectedRoute from './components/RoleProtectedRoute';
 // Auth pages
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AppSelection from './pages/AppSelection';
 
 // Page components
 import Dashboard from './pages/Dashboard';
@@ -148,6 +149,11 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/app-selection" element={
+          <ProtectedRoute>
+            <AppSelection />
+          </ProtectedRoute>
+        } />
         <Route path="/*" element={<AuthenticatedLayout />} />
       </Routes>
 
@@ -220,7 +226,7 @@ const AuthenticatedLayout: React.FC = () => {
         <Sidebar isOpen={sidebarOpen} onNavigate={() => setSidebarOpen(false)} />
         <div className="content">
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<Navigate to="/app-selection" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/projects" element={<ProjectList />} />
             <Route path="/projects/new" element={

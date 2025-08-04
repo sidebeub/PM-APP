@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const http = require('http');
+const multer = require('multer');
+const fs = require('fs');
 require('dotenv').config();
 
 // Set JWT_SECRET directly
@@ -19,6 +21,11 @@ const userRoutes = require('./routes/userRoutes');
 const customerRoutes = require('./routes/customerRoutes');
 const authRoutes = require('./routes/authRoutes');
 const kbomRoutes = require('./routes/kbomRoutes');
+
+// Import ADVAPI routes
+const advApiAuthRoutes = require('../ADVAPI/src/routes/auth');
+const advApiModelRoutes = require('../ADVAPI/src/routes/models');
+const advApiSystemRoutes = require('../ADVAPI/src/routes/system');
 
 // Create Express app and HTTP server
 const app = express();
@@ -53,8 +60,38 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Configure multer for file uploads (needed for ADVAPI)
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, '../ADVAPI/uploads');
+    try {
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+      cb(null, uploadDir);
+    } catch (error) {
+      console.error('Error creating uploads directory:', error);
+      cb(null, require('os').tmpdir());
+    }
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 100 * 1024 * 1024, // 100MB limit per file
+    fieldSize: 100 * 1024 * 1024 // 100MB field size limit
+  }
+});
+
+// Make upload middleware available globally for ADVAPI routes
+app.set('upload', upload);
 
 // Log requests
 app.use((req, res, next) => {
@@ -93,10 +130,26 @@ app.use('/api/users', userRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/kbom', kbomRoutes);
 
+// ADVAPI Routes (3D Model Viewer)
+app.use('/api/advapi/auth', advApiAuthRoutes);
+app.use('/api/advapi/models', advApiModelRoutes);
+app.use('/api/advapi/system', advApiSystemRoutes);
+
+// Serve ADVAPI static files under /advapi path
+app.use('/advapi', express.static(path.join(__dirname, '../ADVAPI/public')));
+
+// Serve uploads from ADVAPI
+app.use('/advapi/uploads', express.static(path.join(__dirname, '../ADVAPI/uploads')));
+
 // Serve static files from the React app in production
 if (process.env.NODE_ENV === 'production') {
   // Serve static files from the React app
   app.use(express.static(path.join(__dirname, '../build')));
+
+  // Handle ADVAPI routes - serve the ADVAPI index.html for /advapi paths
+  app.get('/advapi*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../ADVAPI/public/index.html'));
+  });
 
   // The "catchall" handler: for any request that doesn't
   // match one above, send back React's index.html file.
