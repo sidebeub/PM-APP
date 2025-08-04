@@ -135,7 +135,7 @@ app.use('/api/advapi/auth', advApiAuthRoutes);
 app.use('/api/advapi/models', advApiModelRoutes);
 app.use('/api/advapi/system', advApiSystemRoutes);
 
-// Serve ADVAPI static files under /advapi path
+// Serve ADVAPI static files under /advapi path (works in both dev and production)
 app.use('/advapi', express.static(path.join(__dirname, '../ADVAPI/public')));
 
 // Serve uploads from ADVAPI
@@ -145,9 +145,12 @@ app.use('/advapi/uploads', express.static(path.join(__dirname, '../ADVAPI/upload
 if (process.env.NODE_ENV === 'production') {
   // Serve static files from the React app
   app.use(express.static(path.join(__dirname, '../build')));
+}
 
-  // Handle ADVAPI routes - serve the ADVAPI index.html for /advapi paths
-  app.get('/advapi*', (req, res) => {
+// Production route handlers
+if (process.env.NODE_ENV === 'production') {
+  // Handle ADVAPI routes - serve the ADVAPI index.html for /advapi paths that don't match static files
+  app.get('/advapi', (req, res) => {
     res.sendFile(path.join(__dirname, '../ADVAPI/public/index.html'));
   });
 
