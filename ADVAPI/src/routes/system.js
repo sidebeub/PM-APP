@@ -77,6 +77,7 @@ router.post('/test-db-connection', async (req, res) => {
       await initializeDatabase(credentials);
 
       console.log('Database connection test successful');
+      console.log('KBOM Debug: Database credentials stored and initialized');
 
       res.json({
         success: true,

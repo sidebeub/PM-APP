@@ -48,6 +48,7 @@ exports.getModels = async (req, res) => {
     try {
       // Check if database is connected - async operation now
       const isDbConnected = await dbService.isConnected();
+      console.log('KBOM Debug: Database connection status:', isDbConnected);
       if (isDbConnected) {
         dbConnected = true;
         console.log('Database is connected, fetching models...');
@@ -69,6 +70,7 @@ exports.getModels = async (req, res) => {
           }
           
           // Transform database models to match API format
+          console.log('KBOM Debug: Processing', dbModels.length, 'models from database');
           const formattedDbModels = await Promise.all(dbModels.map(async model => {
             const formattedModel = {
               id: model.id,
