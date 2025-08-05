@@ -387,6 +387,23 @@ class ModelManager {
           data = await response.json();
           console.log(`Received ${data.length} models from server`);
           console.log('First few models:', data.slice(0, 3));
+
+    // Debug KBOM data
+    const modelsWithKbom = data.filter(model =>
+      (model.relatedCustomers && model.relatedCustomers.length > 0) ||
+      (model.relatedSalesOrders && model.relatedSalesOrders.length > 0) ||
+      (model.relatedWorkOrders && model.relatedWorkOrders.length > 0) ||
+      (model.kboms && model.kboms.length > 0)
+    );
+    console.log('KBOM Debug: Models with KBOM data:', modelsWithKbom.length);
+    if (modelsWithKbom.length > 0) {
+      console.log('KBOM Debug: First model with KBOM data:', modelsWithKbom[0]);
+    }
+
+    // Check source of models
+    const dbModels = data.filter(model => model.source === 'database');
+    const apiModels = data.filter(model => model.source !== 'database');
+    console.log('KBOM Debug: Database models:', dbModels.length, 'API models:', apiModels.length);
         } else {
           console.warn('Regular endpoint failed with status:', response.status);
           let errorText = '';

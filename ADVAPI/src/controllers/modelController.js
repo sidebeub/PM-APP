@@ -48,12 +48,14 @@ exports.getModels = async (req, res) => {
     // Step 2: Try to get models from database (if the above failed)
     try {
       // Check if database is connected - async operation now
+      console.log('KBOM Debug: Attempting to connect to database...');
       const isDbConnected = await dbService.isConnected();
       console.log('KBOM Debug: Database connection status:', isDbConnected);
       if (isDbConnected) {
         dbConnected = true;
-        console.log('Database is connected, fetching models...');
+        console.log('KBOM Debug: Database is connected, fetching models...');
         const dbModels = await dbService.getAllModels();
+        console.log('KBOM Debug: Retrieved', dbModels?.length || 0, 'models from database');
         
         if (dbModels && dbModels.length > 0) {
           console.log(`Retrieved ${dbModels.length} models from database`);
