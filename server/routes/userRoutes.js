@@ -24,6 +24,9 @@ router.post('/', adminAuth, UserController.createUser);
 // PUT update a user - Admin only for role changes
 router.put('/:id', auth, UserController.updateUser);
 
+// PATCH update user app permissions - Admin only
+router.patch('/:id/permissions', adminAuth, UserController.updateUserPermissions);
+
 // DELETE a user - Admin only
 router.delete('/:id', adminAuth, UserController.deleteUser);
 

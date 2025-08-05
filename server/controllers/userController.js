@@ -166,6 +166,41 @@ const UserController = {
       console.error('Error in getAllDepartments controller:', error);
       res.status(500).json({ error: 'Failed to retrieve departments' });
     }
+  },
+
+  // Update user app permissions
+  updateUserPermissions: async (req, res) => {
+    const { id } = req.params;
+    const { canAccessProjectManagement, canAccess3dViewer } = req.body;
+
+    try {
+      // Build update object with only provided fields
+      const updateData = {};
+      if (canAccessProjectManagement !== undefined) {
+        updateData.can_access_project_management = canAccessProjectManagement;
+      }
+      if (canAccess3dViewer !== undefined) {
+        updateData.can_access_3d_viewer = canAccess3dViewer;
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        return res.status(400).json({ error: 'No permissions to update' });
+      }
+
+      const updatedUser = await UserModel.updateUser(id, updateData);
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: `User with ID ${id} not found` });
+      }
+
+      res.json({
+        message: 'User permissions updated successfully',
+        user: updatedUser
+      });
+    } catch (error) {
+      console.error(`Error in updateUserPermissions controller for ID ${id}:`, error);
+      res.status(500).json({ error: 'Failed to update user permissions' });
+    }
   }
 };
 

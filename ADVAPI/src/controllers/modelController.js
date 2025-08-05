@@ -136,13 +136,24 @@ exports.getModels = async (req, res) => {
             if (formattedDbModels.length > 0) {
               // Use only database models
               models = formattedDbModels;
+              console.log(`KBOM Debug: Using ${models.length} models from database WITH KBOM data`);
               console.log(`Using ${models.length} models from database only (database is primary source)`);
-              
+
               // Set apiSuccess flag to false so we don't try to replace these models
               apiSuccess = false;
+
+              // Skip APS API entirely when we have database models
+              console.log('KBOM Debug: Skipping APS API - using database models with KBOM data');
+              return res.json({
+                success: true,
+                models: models,
+                source: 'database_with_kbom',
+                count: models.length
+              });
             }
           }
         } else {
+          console.log('KBOM Debug: No models found in database - KBOM data will not be available');
           console.log('No models found in database, will try APS API');
         }
       } else {
@@ -157,11 +168,16 @@ exports.getModels = async (req, res) => {
     }
     
     // Step 2: Check from APS API if needed
-    // Conditions to check API:
-    // 1. Force refresh is requested
-    // 2. No models found in database (or only test models)
-    // 3. Database is not connected
-    if (forceRefresh || (models.length <= 3) || !dbConnected) {
+    // MODIFIED: Only use APS API if explicitly requested with forceRefresh=true
+    // Always prefer database models for KBOM data integration
+    console.log('KBOM Debug: Checking if we need to use APS API...');
+    console.log('KBOM Debug: forceRefresh:', forceRefresh);
+    console.log('KBOM Debug: models.length:', models.length);
+    console.log('KBOM Debug: dbConnected:', dbConnected);
+
+    // Only use APS API if explicitly forced AND database is not connected
+    if (forceRefresh && !dbConnected) {
+      console.log('KBOM Debug: Using APS API instead of database - this will NOT have KBOM data');
       try {
         console.log('Fetching models from APS API (all buckets)...');
         const apiModels = await apsService.getAllModels();
