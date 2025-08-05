@@ -28,12 +28,12 @@ const Login: React.FC = () => {
   const { isAuthenticated, error, status } = useSelector((state: RootState) => state.auth);
   
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
   });
-  
+
   const [formErrors, setFormErrors] = useState({
-    email: '',
+    username: '',
     password: '',
   });
 
@@ -53,13 +53,13 @@ const Login: React.FC = () => {
 
   const validateForm = () => {
     let valid = true;
-    const newErrors = { email: '', password: '' };
+    const newErrors = { username: '', password: '' };
 
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
+    if (!formData.username) {
+      newErrors.username = 'Username is required';
       valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+    } else if (formData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters';
       valid = false;
     }
 
@@ -121,15 +121,15 @@ const Login: React.FC = () => {
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
+              id="username"
+              label="Username"
+              name="username"
+              autoComplete="username"
               autoFocus
-              value={formData.email}
+              value={formData.username}
               onChange={handleChange}
-              error={!!formErrors.email}
-              helperText={formErrors.email}
+              error={!!formErrors.username}
+              helperText={formErrors.username}
             />
             <TextField
               margin="normal"

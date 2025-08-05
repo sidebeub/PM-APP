@@ -94,7 +94,7 @@ export const authService = {
 
   // Login a user
   login: async (credentials: {
-    email: string;
+    username: string;
     password: string;
   }) => {
     try {

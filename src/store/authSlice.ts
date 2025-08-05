@@ -29,7 +29,7 @@ const initialState: AuthState = {
 
 // Define the login credentials interface
 interface LoginCredentials {
-  email: string;
+  username: string;
   password: string;
 }
 

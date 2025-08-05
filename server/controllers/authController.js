@@ -73,23 +73,23 @@ exports.login = async (req, res) => {
     console.log('Request body:', req.body);
     console.log('Request body type:', typeof req.body);
 
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
     // Validate input
-    if (!email || !password) {
+    if (!username || !password) {
       console.log('Validation failed:', {
-        emailExists: !!email,
+        usernameExists: !!username,
         passwordExists: !!password,
-        emailType: typeof email,
+        usernameType: typeof username,
         passwordType: typeof password
       });
-      return res.status(400).json({ message: 'Email and password are required' });
+      return res.status(400).json({ message: 'Username and password are required' });
     }
 
     // Check if user exists
     const users = await db.query(
-      'SELECT * FROM users WHERE email = $1',
-      [email]
+      'SELECT * FROM users WHERE username = $1',
+      [username]
     );
 
     if (users.rows.length === 0) {
