@@ -41,7 +41,7 @@ const Login: React.FC = () => {
   useEffect(() => {
     if (isAuthenticated) {
       const state = location.state as LocationState;
-      const from = state?.from?.pathname || '/app-selection';
+      const from = state?.from?.pathname || '/dashboard';
       navigate(from, { replace: true });
     }
   }, [isAuthenticated, navigate, location]);
