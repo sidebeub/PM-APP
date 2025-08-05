@@ -30,7 +30,8 @@ try {
 exports.getModels = async (req, res) => {
   try {
     console.log('Fetching all models...');
-    
+    console.log('KBOM Debug: Starting model fetch process');
+
     // Start with an empty array - only use real models from Autodesk or database
     let models = [];
     
@@ -144,12 +145,8 @@ exports.getModels = async (req, res) => {
 
               // Skip APS API entirely when we have database models
               console.log('KBOM Debug: Skipping APS API - using database models with KBOM data');
-              return res.json({
-                success: true,
-                models: models,
-                source: 'database_with_kbom',
-                count: models.length
-              });
+              console.log('KBOM Debug: Returning database models directly as array');
+              return res.json(models);
             }
           }
         } else {
@@ -278,8 +275,15 @@ exports.getModels = async (req, res) => {
       }
     });
     
-    console.log(`Returning ${uniqueModels.length} unique models`);
-    res.json(uniqueModels);
+    console.log('KBOM Debug: Final models before return:', models);
+    console.log('KBOM Debug: uniqueModels type:', typeof uniqueModels);
+    console.log('KBOM Debug: uniqueModels value:', uniqueModels);
+    console.log(`Returning ${uniqueModels?.length || 0} unique models`);
+
+    // Ensure we always return an array
+    const finalModels = Array.isArray(uniqueModels) ? uniqueModels : [];
+    console.log('KBOM Debug: Sending final models array:', finalModels);
+    res.json(finalModels);
   } catch (error) {
     console.error('Error getting models:', error);
     console.error('Error stack:', error.stack);
