@@ -60,8 +60,10 @@ exports.getModels = async (req, res) => {
           let kbomTableExists = false;
           let kbomService;
           try {
+            console.log('KBOM Debug: Checking if KBOM table exists...');
             kbomService = require('../services/kbomService');
             kbomTableExists = await kbomService.checkKbomTableExists();
+            console.log('KBOM Debug: KBOM table exists:', kbomTableExists);
           } catch (kbomError) {
             console.error('Error checking KBOM table:', kbomError);
           }
@@ -87,6 +89,7 @@ exports.getModels = async (req, res) => {
             // Add KBOM data if available
             if (kbomTableExists && kbomService && model.file_name) {
               try {
+                console.log(`KBOM Debug: Looking for KBOM data for model "${model.file_name}"`);
                 const relatedKboms = await kbomService.findRelatedKboms(model.file_name);
                 
                 if (relatedKboms && relatedKboms.length > 0) {

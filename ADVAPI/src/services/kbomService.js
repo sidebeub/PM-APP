@@ -21,12 +21,20 @@ const findRelatedKboms = async (fileName) => {
     // Extract just the part number without any extensions for better matching
     // This handles cases like "B2001480.iam.dwf" where we only want "B2001480"
     const partNumber = fileName.split('.')[0];
-    
+
+    console.log(`KBOM Debug: Searching for part number "${partNumber}" from filename "${fileName}"`);
+
     // Extract part number and query for matches using more specific patterns first
     let result = await pool.query(
       `SELECT * FROM kbom WHERE title ILIKE $1 OR title ILIKE $2 OR title ILIKE $3 ORDER BY customer, so`,
       [`${partNumber} %`, `% ${partNumber} %`, `${partNumber}`]
     );
+
+    console.log(`KBOM Debug: Found ${result.rows.length} matches for "${partNumber}"`);
+    if (result.rows.length > 0) {
+      console.log('KBOM Debug: First match columns:', Object.keys(result.rows[0]));
+      console.log('KBOM Debug: First match data:', result.rows[0]);
+    }
     
     // If no results, try a more general pattern
     if (result.rows.length === 0) {
