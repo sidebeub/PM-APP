@@ -9,6 +9,7 @@ const SHUTDOWN_TOKEN = 'local-shutdown-token';
 
 // Import the database initialization function
 let initializeDatabase; // Will be set after import
+const dbService = require('../services/dbService');
 
 /**
  * GET /api/system/status
@@ -44,6 +45,60 @@ router.post('/stop', (req, res) => {
   setTimeout(() => {
     process.exit(0);
   }, 1000);
+});
+
+/**
+ * POST /api/system/test-db-connection
+ * Test database connection with provided credentials
+ */
+router.post('/test-db-connection', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Username and password are required'
+      });
+    }
+
+    console.log('Testing database connection with provided credentials...');
+
+    // Try to initialize the database with the provided credentials
+    try {
+      // Import the initialization function dynamically to avoid circular imports
+      const { initializeDatabase } = require('../server');
+
+      const credentials = {
+        user: username,
+        password: password
+      };
+
+      await initializeDatabase(credentials);
+
+      console.log('Database connection test successful');
+
+      res.json({
+        success: true,
+        message: 'Database connection successful. KBOM data is now available.'
+      });
+
+    } catch (dbError) {
+      console.error('Database connection test failed:', dbError.message);
+
+      res.status(400).json({
+        success: false,
+        message: `Database connection failed: ${dbError.message}`
+      });
+    }
+
+  } catch (error) {
+    console.error('Error testing database connection:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error while testing database connection'
+    });
+  }
 });
 
 /**

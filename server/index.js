@@ -27,6 +27,9 @@ const advApiAuthRoutes = require('../ADVAPI/src/routes/auth');
 const advApiModelRoutes = require('../ADVAPI/src/routes/models');
 const advApiSystemRoutes = require('../ADVAPI/src/routes/system');
 
+// Import ADVAPI database initialization
+const { initializeDatabase } = require('../ADVAPI/src/server');
+
 // Create Express app and HTTP server
 const app = express();
 const server = http.createServer(app);
@@ -244,10 +247,24 @@ app.use((err, req, res, next) => {
 const startServer = () => {
   const serverPort = process.env.PORT || 3001;
 
-  server.listen(serverPort, '0.0.0.0', () => {
+  server.listen(serverPort, '0.0.0.0', async () => {
     console.log(`Server running on port ${serverPort}`);
     console.log(`Environment: ${process.env.NODE_ENV}`);
     console.log(`Database host: ${process.env.DB_HOST || 'localhost'}`);
+
+    // Initialize ADVAPI database connection for KBOM data
+    try {
+      console.log('Initializing ADVAPI database connection for KBOM data...');
+      const dbCredentials = {
+        user: process.env.DB_USER || 'Zach',
+        password: process.env.DB_PASSWORD || 'Rayne22!'
+      };
+      await initializeDatabase(dbCredentials);
+      console.log('ADVAPI database connection initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize ADVAPI database connection:', error.message);
+      console.warn('KBOM data will not be available in 3D viewer');
+    }
   }).on('error', (err) => {
     console.error('Server error:', err);
     process.exit(1);

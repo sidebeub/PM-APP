@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../store';
 import { logout } from '../store/authSlice';
+import DatabaseConfig from '../components/DatabaseConfig';
 import {
   Box,
   Container,
@@ -25,6 +26,7 @@ const AppSelection: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
+  const [showDatabaseConfig, setShowDatabaseConfig] = useState(false);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -35,7 +37,12 @@ const AppSelection: React.FC = () => {
   };
 
   const handle3DViewer = () => {
-    // Open the 3D viewer in the same window
+    // Show database configuration dialog first
+    setShowDatabaseConfig(true);
+  };
+
+  const handleDatabaseConfigured = () => {
+    // After database is configured, open the 3D viewer
     window.location.href = '/advapi';
   };
 
@@ -129,8 +136,8 @@ const AppSelection: React.FC = () => {
                   3D Model Viewer
                 </Typography>
                 <Typography variant="body1" color="text.secondary" paragraph>
-                  View and interact with 3D models using Autodesk Platform Services. 
-                  Upload, translate, and visualize CAD files in your browser.
+                  View and interact with 3D models using Autodesk Platform Services.
+                  Upload, translate, and visualize CAD files in your browser with integrated KBOM data.
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Features:
@@ -140,7 +147,8 @@ const AppSelection: React.FC = () => {
                   <li>CAD File Support</li>
                   <li>Model Upload & Translation</li>
                   <li>Interactive 3D Viewer</li>
-                  <li>Autodesk Platform Integration</li>
+                  <li>KBOM Data Integration</li>
+                  <li>Customer & Work Order Display</li>
                 </Typography>
               </CardContent>
               <CardActions sx={{ p: 3, pt: 0 }}>
@@ -165,6 +173,13 @@ const AppSelection: React.FC = () => {
           </Typography>
         </Box>
       </Container>
+
+      {/* Database Configuration Dialog */}
+      <DatabaseConfig
+        open={showDatabaseConfig}
+        onClose={() => setShowDatabaseConfig(false)}
+        onConfigured={handleDatabaseConfigured}
+      />
     </>
   );
 };
