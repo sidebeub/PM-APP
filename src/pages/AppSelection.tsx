@@ -33,7 +33,13 @@ const AppSelection: React.FC = () => {
   };
 
   const handleProjectManagement = () => {
-    navigate('/dashboard');
+    // Check if user is already authenticated for project management
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      // Redirect to login for project management
+      navigate('/login');
+    }
   };
 
   const handle3DViewer = () => {
@@ -48,25 +54,32 @@ const AppSelection: React.FC = () => {
 
   return (
     <>
-      <AppBar position="static" sx={{ mb: 4 }}>
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Welcome, {user?.username || user?.email}
-          </Typography>
-          <IconButton color="inherit" onClick={handleLogout}>
-            <LogoutIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
+      {user && (
+        <AppBar position="static" sx={{ mb: 4 }}>
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              Welcome, {user?.username || user?.email}
+            </Typography>
+            <IconButton color="inherit" onClick={handleLogout}>
+              <LogoutIcon />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+      )}
 
       <Container maxWidth="md">
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Typography variant="h3" component="h1" gutterBottom>
-            Choose Your Application
+            Project Management Suite
           </Typography>
           <Typography variant="h6" color="text.secondary">
-            Select which application you'd like to use
+            Select the application you'd like to access
           </Typography>
+          {!user && (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+              Each application has its own access requirements
+            </Typography>
+          )}
         </Box>
 
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 4 }}>
@@ -104,14 +117,14 @@ const AppSelection: React.FC = () => {
                 </Typography>
               </CardContent>
               <CardActions sx={{ p: 3, pt: 0 }}>
-                <Button 
-                  variant="contained" 
-                  size="large" 
+                <Button
+                  variant="contained"
+                  size="large"
                   fullWidth
                   onClick={handleProjectManagement}
                   sx={{ py: 1.5 }}
                 >
-                  Open Project Management
+                  {user ? 'Open Project Management' : 'Login to Project Management'}
                 </Button>
               </CardActions>
             </Card>

@@ -147,14 +147,26 @@ const App: React.FC = () => {
     <Router>
       <PageTitleUpdater />
       <Routes>
+        {/* Public routes */}
+        <Route path="/" element={<AppSelection />} />
+        <Route path="/app-selection" element={<AppSelection />} />
+
+        {/* Project Management authentication routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/app-selection" element={
-          <ProtectedRoute>
-            <AppSelection />
-          </ProtectedRoute>
-        } />
-        <Route path="/*" element={<AuthenticatedLayout />} />
+
+        {/* Project Management app routes (require authentication) */}
+        <Route path="/dashboard/*" element={<AuthenticatedLayout />} />
+        <Route path="/projects/*" element={<AuthenticatedLayout />} />
+        <Route path="/tasks/*" element={<AuthenticatedLayout />} />
+        <Route path="/gantt/*" element={<AuthenticatedLayout />} />
+        <Route path="/kanban/*" element={<AuthenticatedLayout />} />
+        <Route path="/calendar/*" element={<AuthenticatedLayout />} />
+        <Route path="/team/*" element={<AuthenticatedLayout />} />
+        <Route path="/customers/*" element={<AuthenticatedLayout />} />
+        <Route path="/settings/*" element={<AuthenticatedLayout />} />
+        <Route path="/dependencies/*" element={<AuthenticatedLayout />} />
+        <Route path="/kbom/*" element={<AuthenticatedLayout />} />
       </Routes>
 
       {/* Real-time update notifications */}
