@@ -156,27 +156,16 @@ const App: React.FC = () => {
         <Route path="/register" element={<Register />} />
 
         {/* Project Management app routes (require authentication) */}
-        <Route path="/dashboard" element={<AuthenticatedLayout />} />
         <Route path="/dashboard/*" element={<AuthenticatedLayout />} />
-        <Route path="/projects" element={<AuthenticatedLayout />} />
         <Route path="/projects/*" element={<AuthenticatedLayout />} />
-        <Route path="/tasks" element={<AuthenticatedLayout />} />
         <Route path="/tasks/*" element={<AuthenticatedLayout />} />
-        <Route path="/gantt" element={<AuthenticatedLayout />} />
         <Route path="/gantt/*" element={<AuthenticatedLayout />} />
-        <Route path="/kanban" element={<AuthenticatedLayout />} />
         <Route path="/kanban/*" element={<AuthenticatedLayout />} />
-        <Route path="/calendar" element={<AuthenticatedLayout />} />
         <Route path="/calendar/*" element={<AuthenticatedLayout />} />
-        <Route path="/team" element={<AuthenticatedLayout />} />
         <Route path="/team/*" element={<AuthenticatedLayout />} />
-        <Route path="/customers" element={<AuthenticatedLayout />} />
         <Route path="/customers/*" element={<AuthenticatedLayout />} />
-        <Route path="/settings" element={<AuthenticatedLayout />} />
         <Route path="/settings/*" element={<AuthenticatedLayout />} />
-        <Route path="/dependencies" element={<AuthenticatedLayout />} />
         <Route path="/dependencies/*" element={<AuthenticatedLayout />} />
-        <Route path="/kbom" element={<AuthenticatedLayout />} />
         <Route path="/kbom/*" element={<AuthenticatedLayout />} />
       </Routes>
 
@@ -250,6 +239,7 @@ const AuthenticatedLayout: React.FC = () => {
         <div className="content">
           <Routes>
             <Route path="/" element={<Navigate to="/app-selection" replace />} />
+            <Route index element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/projects" element={<ProjectList />} />
             <Route path="/projects/new" element={

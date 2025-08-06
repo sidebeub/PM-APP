@@ -35,7 +35,7 @@ const AppSelection: React.FC = () => {
   const handleProjectManagement = () => {
     // Check if user is already authenticated for project management
     if (user) {
-      navigate('/dashboard');
+      navigate('/dashboard/');
     } else {
       // Redirect to login for project management
       navigate('/login');
