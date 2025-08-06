@@ -240,60 +240,60 @@ const AuthenticatedLayout: React.FC = () => {
           <Routes>
             <Route path="/" element={<Navigate to="/app-selection" replace />} />
             <Route index element={<Dashboard />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/projects" element={<ProjectList />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="projects" element={<ProjectList />} />
             <Route path="/projects/new" element={
               <RoleProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.PROJECT_MANAGER]}>
                 <ProjectForm mode="create" />
               </RoleProtectedRoute>
             } />
-            <Route path="/projects/:id" element={<ProjectDetails />} />
-            <Route path="/projects/:id/edit" element={
+            <Route path="projects/:id" element={<ProjectDetails />} />
+            <Route path="projects/:id/edit" element={
               <RoleProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.PROJECT_MANAGER]}>
                 <ProjectForm mode="edit" />
               </RoleProtectedRoute>
             } />
-            <Route path="/tasks" element={<TaskList />} />
-            <Route path="/tasks/new" element={
+            <Route path="tasks" element={<TaskList />} />
+            <Route path="tasks/new" element={
               <RoleProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.TEAM_MEMBER]}>
                 <TaskForm mode="create" />
               </RoleProtectedRoute>
             } />
-            <Route path="/tasks/:id" element={<TaskDetails />} />
-            <Route path="/tasks/:id/edit" element={
+            <Route path="tasks/:id" element={<TaskDetails />} />
+            <Route path="tasks/:id/edit" element={
               <RoleProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.TEAM_MEMBER]}>
                 <TaskForm mode="edit" />
               </RoleProtectedRoute>
             } />
-            <Route path="/tasks/:id/dependencies" element={
+            <Route path="tasks/:id/dependencies" element={
               <RoleProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.PROJECT_MANAGER]}>
                 <DependencyManagement />
               </RoleProtectedRoute>
             } />
-            <Route path="/dependencies" element={
+            <Route path="dependencies" element={
               <RoleProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.PROJECT_MANAGER]}>
                 <DependencyManagement />
               </RoleProtectedRoute>
             } />
-            <Route path="/gantt" element={<GanttView />} />
-            <Route path="/kanban" element={<SimpleKanbanBoard />} />
-            <Route path="/calendar" element={<CalendarView />} />
-            <Route path="/team" element={
+            <Route path="gantt" element={<GanttView />} />
+            <Route path="kanban" element={<SimpleKanbanBoard />} />
+            <Route path="calendar" element={<CalendarView />} />
+            <Route path="team" element={
               <RoleProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.PROJECT_MANAGER]}>
                 <TeamMembers />
               </RoleProtectedRoute>
             } />
-            <Route path="/customers" element={
+            <Route path="customers" element={
               <RoleProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.PROJECT_MANAGER]}>
                 <Customers />
               </RoleProtectedRoute>
             } />
-            <Route path="/kbom" element={
+            <Route path="kbom" element={
               <RoleProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.PROJECT_MANAGER]}>
                 <KbomDataManager />
               </RoleProtectedRoute>
             } />
-            <Route path="/settings" element={
+            <Route path="settings" element={
               <RoleProtectedRoute allowedRoles={[UserRole.ADMIN]}>
                 <Settings />
               </RoleProtectedRoute>
