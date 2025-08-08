@@ -155,14 +155,25 @@ const checkKbomTableExists = async () => {
   }
   
   try {
+    console.log('KBOM Debug: Checking for kbom table existence...');
+
+    // First, let's see what tables actually exist
+    const allTables = await pool.query(`
+      SELECT table_name FROM information_schema.tables
+      WHERE table_schema = 'public'
+      ORDER BY table_name;
+    `);
+    console.log('KBOM Debug: All tables in public schema:', allTables.rows.map(r => r.table_name));
+
     const result = await pool.query(`
       SELECT EXISTS (
-        SELECT FROM information_schema.tables 
-        WHERE table_schema = 'public' 
+        SELECT FROM information_schema.tables
+        WHERE table_schema = 'public'
         AND table_name = 'kbom'
       );
     `);
-    
+
+    console.log('KBOM Debug: kbom table exists query result:', result.rows[0]);
     return result.rows[0].exists;
   } catch (error) {
     console.error('Error checking kbom table existence:', error);
