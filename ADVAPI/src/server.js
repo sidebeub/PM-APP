@@ -14,7 +14,8 @@ dotenv.config();
 // Fixed values
 const DB_HOST = 'backupapril272025.cdc2o6m8gcel.us-west-2.rds.amazonaws.com';
 const DB_PORT = 5432;
-const DB_NAME = process.env.DB_NAME || 'BOMs';
+// ADVAPI always uses BOMs database, ignore project management DB_NAME env var
+const DB_NAME = 'BOMs';
 
 // APS credentials - use environment variables or fallback to working credentials
 process.env.APS_CLIENT_ID = process.env.APS_CLIENT_ID || '2F0MDKOpJvlGrU10nK1AsdhF6uzVJsWD4tPwXDqX8S7ywURd';
