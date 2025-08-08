@@ -6,7 +6,8 @@ dotenv.config();
 // Database host and port (stored in code)
 const DB_HOST = 'backupapril272025.cdc2o6m8gcel.us-west-2.rds.amazonaws.com';
 const DB_PORT = 5432;
-const DB_NAME = process.env.DB_NAME || 'BOMs'; // Use the BOMs database
+// For ADVAPI, always use BOMs database unless user provides different credentials
+const DB_NAME = 'BOMs'; // Use the BOMs database (ignore project management DB_NAME env var)
 
 // Create a connection pool
 let pool = null;
