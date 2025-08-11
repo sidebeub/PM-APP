@@ -110,7 +110,7 @@ const DatabaseConfig: React.FC<DatabaseConfigProps> = ({ open, onClose, onConfig
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <DatabaseIcon color="primary" />
           <Typography variant="h6">
-            Database Configuration
+            🔒 Secure Database Access
           </Typography>
         </Box>
       </DialogTitle>
@@ -170,11 +170,12 @@ const DatabaseConfig: React.FC<DatabaseConfigProps> = ({ open, onClose, onConfig
           />
         </Box>
 
-        <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-          <Typography variant="caption" color="text.secondary">
-            🔒 <strong>Secure Connection:</strong> Credentials are encrypted and used only for this session.
+        {/* NO DATABASE DETAILS SHOWN - SECURITY ENHANCED */}
+        <Alert severity="info" sx={{ mt: 2 }}>
+          <Typography variant="body2">
+            🔐 Your credentials are securely processed and never stored permanently.
           </Typography>
-        </Box>
+        </Alert>
       </DialogContent>
 
       <DialogActions sx={{ p: 3, pt: 1 }}>
