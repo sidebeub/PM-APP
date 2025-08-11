@@ -5,9 +5,7 @@ const pendingRequests = new Map<string, Promise<any>>();
 
 // Configure axios instance with timeout and retry logic
 const getBaseURL = () => {
-  // HARDCODED FOR RAILWAY DEPLOYMENT
   // Always use relative URL in production build
-  console.log('Using hardcoded relative API URL for Railway');
   return '/api';
 };
 
@@ -27,9 +25,6 @@ api.interceptors.request.use(
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('Added token to request:', config.url);
-    } else {
-      console.warn('No token found for request:', config.url);
     }
     return config;
   },
@@ -98,7 +93,6 @@ export const authService = {
     password: string;
   }) => {
     try {
-      console.log('Sending login request with:', credentials);
       const response = await api.post('/auth/login', credentials);
       // Store the token in localStorage
       if (response.data.token) {

@@ -170,10 +170,7 @@ const DatabaseConfig: React.FC<DatabaseConfigProps> = ({ open, onClose, onConfig
         </Box>
 
         <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
-          <strong>Database Details:</strong><br />
-          Host: backupapril272025.cdc2o6m8gcel.us-west-2.rds.amazonaws.com<br />
-          Database: BOMs<br />
-          Port: 5432
+          <strong>Note:</strong> Your credentials are used only for this session and are not stored permanently.
         </Typography>
       </DialogContent>
 
