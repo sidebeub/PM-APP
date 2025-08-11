@@ -170,7 +170,7 @@ const DatabaseConfig: React.FC<DatabaseConfigProps> = ({ open, onClose, onConfig
         </Box>
 
         <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
-          <strong>Note:</strong> Your credentials are used only for this session and are not stored permanently.
+          <strong>Privacy:</strong> Your credentials are used only for this session and are not stored permanently.
         </Typography>
       </DialogContent>
 
