@@ -1,4 +1,4 @@
-// DatabaseConfig v2.1 - Security enhanced version
+// DatabaseConfig v2.2 - Security enhanced version - Build: 2025-08-08-16:50
 import React, { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -170,9 +170,11 @@ const DatabaseConfig: React.FC<DatabaseConfigProps> = ({ open, onClose, onConfig
           />
         </Box>
 
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
-          <strong>Security Notice:</strong> Your database credentials are used only for this session and are never stored or logged.
-        </Typography>
+        <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+          <Typography variant="caption" color="text.secondary">
+            🔒 <strong>Secure Connection:</strong> Credentials are encrypted and used only for this session.
+          </Typography>
+        </Box>
       </DialogContent>
 
       <DialogActions sx={{ p: 3, pt: 1 }}>
