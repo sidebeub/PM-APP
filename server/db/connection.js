@@ -10,11 +10,14 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD || 'Rayne22!',
   port: process.env.DB_PORT || 5432,
   ssl: {
-    rejectUnauthorized: false
+    rejectUnauthorized: false, // Keep false for RDS compatibility
+    require: true // Force SSL connection
   },
   connectionTimeoutMillis: 10000,
   idleTimeoutMillis: 30000,
-  max: 10
+  max: 10, // Limit concurrent connections for security
+  statement_timeout: 30000, // 30 second query timeout
+  query_timeout: 30000 // Additional query timeout
 });
 
 // Test the connection

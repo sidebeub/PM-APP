@@ -10,7 +10,8 @@ const bomPool = new Pool({
   password: process.env.BOM_DB_PASSWORD || process.env.DB_PASSWORD || 'Rayne22!',
   port: process.env.BOM_DB_PORT || process.env.DB_PORT || 5432,
   ssl: {
-    rejectUnauthorized: false
+    rejectUnauthorized: false, // Keep false for RDS compatibility
+    require: true // Force SSL connection
   }
 });
 

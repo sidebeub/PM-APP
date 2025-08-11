@@ -22,7 +22,7 @@ const initializePool = (credentials = null) => {
         host: DB_HOST,
         port: DB_PORT,
         database: DB_NAME,
-        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false, require: true } : false
       });
     }
     // If credentials are provided via environment variables
@@ -33,7 +33,7 @@ const initializePool = (credentials = null) => {
         host: DB_HOST,
         port: DB_PORT,
         database: DB_NAME,
-        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false, require: true } : false
       });
     }
     // No credentials provided
