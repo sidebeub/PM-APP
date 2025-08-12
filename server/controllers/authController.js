@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../db/connection');
+const tokenService = require('../services/tokenService');
+const rateLimitService = require('../services/rateLimitService');
 
 // JWT secret key from environment variables
 const JWT_SECRET = process.env.JWT_SECRET;
