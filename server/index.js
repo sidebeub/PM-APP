@@ -19,8 +19,9 @@ const taskRoutes = require('./routes/taskRoutes');
 const milestoneRoutes = require('./routes/milestoneRoutes');
 const userRoutes = require('./routes/userRoutes');
 const customerRoutes = require('./routes/customerRoutes');
-const authRoutes = require('./routes/authRoutesEnhanced');
+const authRoutes = require('./routes/authRoutes');
 const kbomRoutes = require('./routes/kbomRoutes');
+const diagnosticsRoutes = require('./routes/diagnostics');
 
 // Import ADVAPI routes
 const advApiAuthRoutes = require('../ADVAPI/src/routes/auth');
@@ -126,6 +127,7 @@ app.get('/api', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/diagnostics', diagnosticsRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/milestones', milestoneRoutes);

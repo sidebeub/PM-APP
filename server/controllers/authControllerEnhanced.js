@@ -76,6 +76,8 @@ exports.register = async (req, res) => {
 // Enhanced login with rate limiting and refresh tokens
 exports.login = async (req, res) => {
   try {
+    console.log('Enhanced login attempt started');
+
     const { username, password } = req.body;
     const ipAddress = req.ip || req.connection.remoteAddress;
     const userAgent = req.get('User-Agent');
@@ -84,7 +86,14 @@ exports.login = async (req, res) => {
 
     // Validate input
     if (!username || !password) {
+      console.log('Validation failed: missing username or password');
       return res.status(400).json({ message: 'Username and password are required' });
+    }
+
+    // Check if services are available
+    if (!rateLimitService || !tokenService) {
+      console.error('Enhanced auth services not available');
+      return res.status(500).json({ message: 'Authentication services unavailable' });
     }
 
     // Check rate limiting

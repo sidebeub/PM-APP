@@ -4,7 +4,18 @@ const bcrypt = require('bcryptjs');
 const db = require('../db/connection');
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || JWT_SECRET + '_refresh';
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || (JWT_SECRET ? JWT_SECRET + '_refresh' : null);
+
+// Validate required secrets
+if (!JWT_SECRET) {
+  console.error('JWT_SECRET environment variable is not set!');
+  throw new Error('JWT_SECRET is required for token service');
+}
+
+if (!REFRESH_TOKEN_SECRET) {
+  console.error('REFRESH_TOKEN_SECRET environment variable is not set!');
+  console.log('Using fallback: JWT_SECRET + "_refresh"');
+}
 
 // Token expiration times
 const ACCESS_TOKEN_EXPIRY = '15m'; // Short-lived access tokens
