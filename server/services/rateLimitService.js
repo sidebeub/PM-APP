@@ -33,9 +33,9 @@ class RateLimitService {
       usernameFailedAttempts = parseInt(usernameAttempts.rows[0].attempt_count);
     }
 
-    // Rate limiting thresholds
-    const IP_LIMIT = 10;       // 10 failed attempts per IP in 15 minutes
-    const USERNAME_LIMIT = 5;  // 5 failed attempts per username in 15 minutes
+    // Rate limiting thresholds - More lenient for development
+    const IP_LIMIT = 25;       // 25 failed attempts per IP in 15 minutes (increased from 10)
+    const USERNAME_LIMIT = 15; // 15 failed attempts per username in 15 minutes (increased from 5)
 
     const isRateLimited = ipFailedAttempts >= IP_LIMIT || usernameFailedAttempts >= USERNAME_LIMIT;
 

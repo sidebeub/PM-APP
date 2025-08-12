@@ -3,8 +3,8 @@ const router = express.Router();
 const authController = require('../controllers/authControllerEnhanced');
 const { auth, adminAuth, rateLimitAuth } = require('../middleware/authEnhanced');
 
-// Rate limiting for auth endpoints
-const authRateLimit = rateLimitAuth(5, 15); // 5 attempts per 15 minutes
+// Rate limiting for auth endpoints - More lenient for development
+const authRateLimit = rateLimitAuth(20, 15); // 20 attempts per 15 minutes (increased from 5)
 
 // @route   POST /api/auth/register
 // @desc    Register a new user
