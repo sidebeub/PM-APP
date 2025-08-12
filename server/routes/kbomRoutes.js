@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const kbomController = require('../controllers/kbomController');
-const { auth } = require('../middleware/auth');
+const { auth } = require('../middleware/authEnhanced');
 
 // Apply authentication middleware to all routes
 router.use(auth);

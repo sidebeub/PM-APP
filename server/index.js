@@ -19,7 +19,7 @@ const taskRoutes = require('./routes/taskRoutes');
 const milestoneRoutes = require('./routes/milestoneRoutes');
 const userRoutes = require('./routes/userRoutes');
 const customerRoutes = require('./routes/customerRoutes');
-const authRoutes = require('./routes/authRoutes');
+const authRoutes = require('./routes/authRoutesEnhanced');
 const kbomRoutes = require('./routes/kbomRoutes');
 
 // Import ADVAPI routes

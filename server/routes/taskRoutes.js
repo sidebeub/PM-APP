@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const taskController = require('../controllers/taskController');
-const { auth, adminAuth } = require('../middleware/auth');
+const { auth, adminAuth } = require('../middleware/authEnhanced');
 const { taskOwnershipAuth } = require('../middleware/ownershipAuth');
 
 // GET /api/tasks - Get all tasks

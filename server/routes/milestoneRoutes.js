@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const MilestoneController = require('../controllers/milestoneController');
-const { auth, adminAuth } = require('../middleware/auth');
+const { auth, adminAuth } = require('../middleware/authEnhanced');
 
 // GET all milestones
 router.get('/', auth, MilestoneController.getAllMilestones);

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const UserController = require('../controllers/userController');
-const { auth, adminAuth } = require('../middleware/auth');
+const { auth, adminAuth } = require('../middleware/authEnhanced');
 
 // GET all users - Admin and Project Managers only
 router.get('/', auth, UserController.getAllUsers);

@@ -1,6 +1,5 @@
 const WebSocket = require('ws');
-const jwt = require('jsonwebtoken');
-const { promisify } = require('util');
+const tokenService = require('./services/tokenService');
 
 // WebSocket message types
 const MessageType = {
@@ -142,15 +141,11 @@ class WebSocketServer {
     });
   }
   
-  // Verify JWT token
+  // Verify JWT token with enhanced security
   async verifyToken(token) {
     try {
-      const secret = process.env.JWT_SECRET;
-      if (!secret) {
-        throw new Error('JWT_SECRET environment variable not set');
-      }
-      const verifyAsync = promisify(jwt.verify);
-      return await verifyAsync(token, secret);
+      // Use enhanced token verification with blacklist checking
+      return await tokenService.verifyAccessToken(token);
     } catch (error) {
       console.error('Error verifying token:', error);
       throw new Error('Invalid token');
