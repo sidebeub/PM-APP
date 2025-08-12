@@ -6,8 +6,8 @@ const multer = require('multer');
 const fs = require('fs');
 require('dotenv').config();
 
-// Set JWT_SECRET directly
-process.env.JWT_SECRET = 'project_management_app_secret_key_2025';
+// JWT_SECRET should come from Railway environment variables
+// Removed hardcoded override to use Railway's secure JWT_SECRET
 
 // Import WebSocket server
 const WebSocketServer = require('./websocket');

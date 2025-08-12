@@ -145,7 +145,10 @@ class WebSocketServer {
   // Verify JWT token
   async verifyToken(token) {
     try {
-      const secret = process.env.JWT_SECRET || 'your-secret-key';
+      const secret = process.env.JWT_SECRET;
+      if (!secret) {
+        throw new Error('JWT_SECRET environment variable not set');
+      }
       const verifyAsync = promisify(jwt.verify);
       return await verifyAsync(token, secret);
     } catch (error) {

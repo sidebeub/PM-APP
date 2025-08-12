@@ -24,9 +24,13 @@ const auth = (req, res, next) => {
   }
 
   try {
-    // Verify token
+    // Verify token with enhanced security
     const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET, {
+      algorithms: ['HS256'],
+      issuer: 'project-management-app',
+      audience: 'project-management-users'
+    });
 
     console.log('Auth middleware - Token verified for user:', decoded.username);
 

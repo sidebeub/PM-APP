@@ -47,11 +47,21 @@ exports.register = async (req, res) => {
       [result.rows[0].id]
     );
 
-    // Generate JWT token
+    // Generate JWT token with enhanced security
     const token = jwt.sign(
-      { id: newUser.rows[0].id, username: newUser.rows[0].username, role: newUser.rows[0].role },
+      {
+        id: newUser.rows[0].id,
+        username: newUser.rows[0].username,
+        role: newUser.rows[0].role,
+        iat: Math.floor(Date.now() / 1000) // Issued at time
+      },
       JWT_SECRET,
-      { expiresIn: '1d' }
+      {
+        expiresIn: '1d',
+        algorithm: 'HS256',
+        issuer: 'project-management-app',
+        audience: 'project-management-users'
+      }
     );
 
     // Return user and token
@@ -104,11 +114,21 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Generate JWT token
+    // Generate JWT token with enhanced security
     const token = jwt.sign(
-      { id: user.id, username: user.username, role: user.role },
+      {
+        id: user.id,
+        username: user.username,
+        role: user.role,
+        iat: Math.floor(Date.now() / 1000) // Issued at time
+      },
       JWT_SECRET,
-      { expiresIn: '1d' }
+      {
+        expiresIn: '1d',
+        algorithm: 'HS256',
+        issuer: 'project-management-app',
+        audience: 'project-management-users'
+      }
     );
 
     // Return user and token
