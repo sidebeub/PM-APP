@@ -70,24 +70,41 @@ class TokenService {
   }
 
   /**
-   * Verify access token
+   * Verify access token with backward compatibility
    */
   async verifyAccessToken(token) {
     try {
-      const decoded = jwt.verify(token, JWT_SECRET, {
-        algorithms: ['HS256'],
-        issuer: 'project-management-app',
-        audience: 'project-management-users'
-      });
+      // First try with enhanced validation (new tokens)
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET, {
+          algorithms: ['HS256'],
+          issuer: 'project-management-app',
+          audience: 'project-management-users'
+        });
 
-      // Check if token is blacklisted
-      const blacklisted = await this.isTokenBlacklisted(decoded.jti);
-      if (blacklisted) {
-        throw new Error('Token has been revoked');
+        // Check if token is blacklisted (only for new tokens with jti)
+        if (decoded.jti) {
+          const blacklisted = await this.isTokenBlacklisted(decoded.jti);
+          if (blacklisted) {
+            throw new Error('Token has been revoked');
+          }
+        }
+
+        return decoded;
+      } catch (enhancedError) {
+        // If enhanced validation fails, try basic validation (old tokens)
+        console.log('Enhanced validation failed, trying basic validation for backward compatibility');
+
+        const decoded = jwt.verify(token, JWT_SECRET, {
+          algorithms: ['HS256']
+          // No issuer/audience check for backward compatibility
+        });
+
+        console.log('Token verified with basic validation (legacy token)');
+        return decoded;
       }
-
-      return decoded;
     } catch (error) {
+      console.error('Token verification failed:', error.message);
       throw new Error('Invalid or expired access token');
     }
   }

@@ -27,7 +27,7 @@ const auth = async (req, res, next) => {
 
     // Extract and verify token
     const token = authHeader.split(' ')[1];
-    
+
     try {
       const decoded = await tokenService.verifyAccessToken(token);
       console.log('Auth middleware - Token verified for user:', decoded.username);
@@ -36,24 +36,32 @@ const auth = async (req, res, next) => {
       req.user = decoded;
       next();
     } catch (error) {
-      console.error('Auth middleware - Token verification failed:', error.message);
-      
-      // Handle specific error types
-      if (error.message.includes('expired')) {
-        return res.status(401).json({ 
-          message: 'Token has expired',
-          code: 'TOKEN_EXPIRED'
+      console.error('Auth middleware - Enhanced token verification failed, trying fallback:', error.message);
+
+      // Fallback to basic JWT verification for backward compatibility
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET, {
+          algorithms: ['HS256']
         });
-      } else if (error.message.includes('revoked')) {
-        return res.status(401).json({ 
-          message: 'Token has been revoked',
-          code: 'TOKEN_REVOKED'
-        });
-      } else {
-        return res.status(401).json({ 
-          message: 'Token is not valid',
-          code: 'TOKEN_INVALID'
-        });
+
+        console.log('Auth middleware - Fallback verification successful for user:', decoded.username);
+        req.user = decoded;
+        next();
+      } catch (fallbackError) {
+        console.error('Auth middleware - All token verification failed:', fallbackError.message);
+
+        // Handle specific error types
+        if (fallbackError.message.includes('expired')) {
+          return res.status(401).json({
+            message: 'Token has expired',
+            code: 'TOKEN_EXPIRED'
+          });
+        } else {
+          return res.status(401).json({
+            message: 'Token is not valid',
+            code: 'TOKEN_INVALID'
+          });
+        }
       }
     }
 
