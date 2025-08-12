@@ -312,6 +312,18 @@ class WebSocketService {
           store.dispatch(removeProject(message.payload.id));
           break;
 
+        case WebSocketMessageType.CONNECTION_SUCCESS:
+          console.log('WebSocket connection established successfully');
+          break;
+
+        case WebSocketMessageType.USER_CONNECTED:
+          console.log('User connected:', message.payload);
+          break;
+
+        case WebSocketMessageType.USER_DISCONNECTED:
+          console.log('User disconnected:', message.payload);
+          break;
+
         case WebSocketMessageType.ERROR:
           console.error('WebSocket error:', message.payload);
           break;
